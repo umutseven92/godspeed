@@ -1,0 +1,14 @@
+{
+    "playdate.source": "source",
+    "playdate.output": "out/godspeed.pdx",
+    "Lua.workspace.ignoreDir": [
+        ".vscode",
+        "lib/**"
+    ],
+    "Lua.diagnostics.disable": [
+        "undefined-global",
+        "lowercase-global",
+        "undefined-field",
+        "need-check-nil"
+    ]
+}

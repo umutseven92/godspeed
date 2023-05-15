@@ -1,0 +1,15 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "playdate",
+            "request": "launch",
+            "name": "Run app in Playdate simulator",
+            "source": "${workspaceFolder}/source",
+            "output": "${workspaceFolder}/out/godspeed.pdx"
+        }
+    ]
+}
