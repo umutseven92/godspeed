@@ -30,6 +30,7 @@ end
 function Background:spawnSprite(image)
     local sprite = gfx.sprite.new(image)
     sprite:setCenter(0, 0)
+    sprite:setZIndex(0)
     sprite:add()
 
     return sprite

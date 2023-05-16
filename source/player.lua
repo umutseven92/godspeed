@@ -40,6 +40,7 @@ function Player:init(xPosition)
 
     self.sprite = gfx.sprite.new(playerImage)
     self.sprite:moveTo(self.x, self.y)
+    self.sprite:setZIndex(1)
     self.sprite:add()
 end
 

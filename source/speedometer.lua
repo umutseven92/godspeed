@@ -9,8 +9,19 @@ local gfx <const> = playdate.graphics
 local speedDiv <const> = 1.5
 
 function Speedometer:init(screenWidth, screenHeight)
+    local skullImage = gfx.image.new("images/skull")
+    assert(skullImage)
+    self.skullSprite = gfx.sprite.new(skullImage)
+
     self.posX = screenWidth * (3.5 / 4)
     self.posY = screenHeight * (3.65 / 4)
+
+    self.skullSprite:moveTo(self.posX - 40, self.posY - 8)
+    self.skullSprite:setZIndex(2)
+    self.skullSprite:setCenter(0, 0)
+    self.skullSprite:setVisible(false)
+    self.skullSprite:add()
+
     self.hide = false
     self.flashing = false
 end
@@ -21,11 +32,10 @@ function Speedometer:startFlashing()
     end
     self.flashing = true
     self.hide = true
-    self.flashTimer = playdate.frameTimer.new(15, function ()
+    self.flashTimer = playdate.frameTimer.new(15, function()
         self.hide = not self.hide
     end)
     self.flashTimer.repeats = true
-
 end
 
 function Speedometer:stopFlashing()
@@ -39,6 +49,13 @@ function Speedometer:stopFlashing()
     self.flashTimer:remove()
 end
 
+-- Ratio is a number between 0 and 1 that represent how much of the skull to show.
+function Speedometer:setSkullRatio(ratio)
+    local toShow = self.skullSprite.height * ratio
+    self.skullSprite:setClipRect(self.skullSprite.x, self.skullSprite.y, self.skullSprite.width, toShow)
+    
+end
+
 function Speedometer:update(speed)
     -- Invert the draw mode & print the speed.
     -- Draw mode is inverted to make the text white, as the font itself is black.
@@ -50,4 +67,6 @@ function Speedometer:update(speed)
         gfx.drawText(string.format("%d", math.floor(speed / speedDiv)), self.posX, self.posY)
     end
     gfx.setImageDrawMode(originalDrawMode)
+
+    self.skullSprite:setVisible(self.flashing)    
 end
