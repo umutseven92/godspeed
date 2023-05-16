@@ -1,51 +1,51 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
-import "CoreLibs/timer"
+import "CoreLibs/frameTimer"
 import "CoreLibs/ui"
 
 import "player"
 import "background"
+import "lanes"
+import "speedometer"
 
 local gfx <const> = playdate.graphics
 local ui <const> = playdate.ui
 
-local speed_div <const> = 10
+local speedLimit = 50
 
 local screenWidth, screenHeight = playdate.display.getSize()
 
 local background = nil
 local player = nil
-local lanes = { top = screenHeight / 4, middle = screenHeight / 2, bottom = screenHeight - screenHeight / 4 }
-local currentLane = lanes.middle
+local lanes = nil
+local speedometer = nil
+
+function setUpFonts()
+    local varnished = gfx.font.new("fonts/Asheville-Sans-14-Bold")
+    assert(varnished)
+    gfx.setFont(varnished)
+end
 
 function setup()
+    setUpFonts()
     ui.crankIndicator:start()
 
+    speedometer = Speedometer(screenWidth, screenHeight)
+    lanes = Lanes(screenHeight)
     background = Background()
     local playerPosX = screenWidth / 4
 
     player = Player(playerPosX)
-    player:move(currentLane)
+    player:move(lanes:getCurrentLane())
 end
 
 setup()
 
-function setLane(direction)
-    if direction == "up" then
-        if currentLane == lanes.middle then
-            currentLane = lanes.top
-        elseif currentLane == lanes.bottom
-        then
-            currentLane = lanes.middle
-        end
-    elseif direction == "down" then
-        if currentLane == lanes.middle then
-            currentLane = lanes.bottom
-        elseif currentLane == lanes.top
-        then
-            currentLane = lanes.middle
-        end
+function changeLane(direction)
+    local changed = lanes:setLane(direction)
+    if changed then
+        player:moveLerp(lanes:getCurrentLane())
     end
 end
 
@@ -60,20 +60,29 @@ function playdate.update()
 
     local _, acceleratedChange = playdate.getCrankChange()
 
-    if acceleratedChange > 0 then
-        background:scroll(acceleratedChange / speed_div)
+    local speed = 0
+    if acceleratedChange >= 0 then
+        ---@diagnostic disable-next-line: cast-local-type
+        speed = acceleratedChange
     end
 
+    background:scroll(speed)
+
     if playdate.buttonJustPressed(playdate.kButtonUp) then
-        setLane("up")
-        player:move_lerp(currentLane)
+        changeLane("up")
     end
     if playdate.buttonJustPressed(playdate.kButtonDown) then
-        setLane("down")
-        player:move_lerp(currentLane)
+        changeLane("down")
+    end
+
+    if speed < speedLimit then
+        speedometer:startFlashing()
+    else
+        speedometer:stopFlashing()
     end
 
     player:update(deltaTime)
     gfx.sprite.update()
-    playdate.timer.updateTimers()
+    speedometer:update(speed)
+    playdate.frameTimer.updateTimers()
 end

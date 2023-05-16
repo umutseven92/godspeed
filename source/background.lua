@@ -3,12 +3,16 @@ class('Background').extends()
 
 local gfx <const> = playdate.graphics
 
+-- Higher this is, slower the background scrolls.
+local speedDiv <const> = 10
+
 function Background:init()
     Background.super.init(self)
 
     print("Initializing background")
     self.x = 0
     local bgImage = gfx.image.new("images/background.png")
+    assert(bgImage)
     self.imageWidth, _ = bgImage:getSize()
 
     self:spawnSprites(bgImage)
@@ -23,7 +27,7 @@ function Background:spawnSprites(bgImage)
     self.sprites = {firstSprite, secondSprite}
 end
 
-function Background:spawnSprite(image, xPosition)
+function Background:spawnSprite(image)
     local sprite = gfx.sprite.new(image)
     sprite:setCenter(0, 0)
     sprite:add()
@@ -38,13 +42,13 @@ function Background:moveSprites()
 end
 
 function Background:scroll(x)
-    if (self.x - x) < -self.imageWidth then
+    if (self.x - (x / speedDiv)) < -self.imageWidth then
         -- Move the sprites back to origin, to create a scrolling effect.
         self.x = 0
         self:moveSprites()
     end
 
-    self.x -= x
+    self.x -= (x / speedDiv)
 
     self:moveSprites()
 
