@@ -12,30 +12,64 @@ local ui <const> = playdate.ui
 
 local speed_div <const> = 10
 
+local screenWidth, screenHeight = playdate.display.getSize()
+
 local background = nil
 local player = nil
+local lanes = { top = screenHeight / 4, middle = screenHeight / 2, bottom = screenHeight - screenHeight / 4 }
+local currentLane = lanes.middle
 
 function setup()
     ui.crankIndicator:start()
 
     background = Background()
-    player = Player()
+    local playerPosX = screenWidth / 4
+
+    player = Player(playerPosX)
+    player:move(currentLane)
 end
 
 setup()
 
-function playdate.update()  
+function setLane(direction)
+    if direction == "up" then
+        if currentLane == lanes.middle then
+            currentLane = lanes.top
+        elseif currentLane == lanes.bottom
+        then
+            currentLane = lanes.middle
+        end
+    elseif direction == "down" then
+        if currentLane == lanes.middle then
+            currentLane = lanes.bottom
+        elseif currentLane == lanes.top
+        then
+            currentLane = lanes.middle
+        end
+    end
+end
+
+function playdate.update()
     if playdate.isCrankDocked() then
-        playdate.ui.crankIndicator:update() 
+        playdate.ui.crankIndicator:update()
         return
-    end  
+    end
+
     local _, acceleratedChange = playdate.getCrankChange()
 
     if acceleratedChange > 0 then
         background:scroll(acceleratedChange / speed_div)
     end
 
+    if playdate.buttonJustPressed(playdate.kButtonUp) then
+        setLane("up")
+        player:move(currentLane)
+    end
+    if playdate.buttonJustPressed(playdate.kButtonDown) then
+        setLane("down")
+        player:move(currentLane)
+    end
+
     gfx.sprite.update()
     playdate.timer.updateTimers()
-
 end

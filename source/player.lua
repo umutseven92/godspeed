@@ -6,13 +6,13 @@ local screenWidth, screenHeight = playdate.display.getSize()
 local spriteHalfWidth = nil
 local spriteHalfHeight = nil
 
-function Player:init()
+function Player:init(xPosition)
     Player.super.init(self)
     
     print("Initializing player")
 
-    self.x = screenWidth / 4
-    self.y = screenHeight / 2
+    self.x = xPosition
+    self.y = 0
 
     local playerImage = gfx.image.new("images/player.png")
     self.sprite = gfx.sprite.new(playerImage)
@@ -24,15 +24,8 @@ function Player:init()
 
 end
 
-function Player:move(x, y)
-
-    if self.x + x <= screenWidth - spriteHalfWidth and self.x + x >= spriteHalfWidth then
-        self.x += x
-    end
-    if self.y + y <= screenHeight - spriteHalfHeight and self.y + y >= spriteHalfHeight  then
-        self.y += y
-    end
-
+function Player:move(y)
+    self.y = y
     self.sprite:moveTo(self.x, self.y)
 end
 
