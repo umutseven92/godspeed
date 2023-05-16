@@ -50,6 +50,9 @@ function setLane(direction)
 end
 
 function playdate.update()
+    local deltaTime = playdate.getElapsedTime()
+    playdate.resetElapsedTime()
+
     if playdate.isCrankDocked() then
         playdate.ui.crankIndicator:update()
         return
@@ -63,13 +66,14 @@ function playdate.update()
 
     if playdate.buttonJustPressed(playdate.kButtonUp) then
         setLane("up")
-        player:move(currentLane)
+        player:move_lerp(currentLane)
     end
     if playdate.buttonJustPressed(playdate.kButtonDown) then
         setLane("down")
-        player:move(currentLane)
+        player:move_lerp(currentLane)
     end
 
+    player:update(deltaTime)
     gfx.sprite.update()
     playdate.timer.updateTimers()
 end
