@@ -4,4 +4,4 @@ description=One schoolbus, one ticking bomb, only one way to- forward. Godspeed.
 bundleID=com.umutseven.godspeed
 version=1.0
 buildNumber=1
-imagePath=images/meta
+imagePath=assets/images/meta

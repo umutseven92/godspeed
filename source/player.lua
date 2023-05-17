@@ -1,9 +1,8 @@
 import "CoreLibs/math"
 import "utils"
+import "base_drawn"
 
-class('Player').extends()
-
-local gfx <const> = playdate.graphics
+class('Player').extends(BaseDrawn)
 
 -- LERP const for position
 -- Higher this is, faster the player changes lanes.
@@ -28,20 +27,14 @@ local rotateFrom = nil
 local rotateTo = nil
 
 function Player:init(xPosition)
-    Player.super.init(self)
 
     print("Initializing player")
 
     self.x = xPosition
     self.y = 0
+    
+    Player.super.init(self, "assets/images/player", 2, self.x, self.y)
 
-    local playerImage = gfx.image.new("images/player.png")
-    assert(playerImage)
-
-    self.sprite = gfx.sprite.new(playerImage)
-    self.sprite:moveTo(self.x, self.y)
-    self.sprite:setZIndex(1)
-    self.sprite:add()
 end
 
 function Player:moveLerp(y)

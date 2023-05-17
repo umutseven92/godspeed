@@ -6,9 +6,10 @@ import "CoreLibs/timer"
 import "CoreLibs/ui"
 
 import "player"
-import "background"
+import "background/background_manager"
 import "lanes"
-import "speedometer"
+import "speedometer/speedometer"
+import "obstacle"
 
 local gfx <const> = playdate.graphics
 local ui <const> = playdate.ui
@@ -21,13 +22,14 @@ local screenWidth, screenHeight = playdate.display.getSize()
 
 local gameOverAcc = 0
 
-local background = nil
+local background_manager = nil
 local player = nil
 local lanes = nil
 local speedometer = nil
+local obstacles = {}
 
 function setUpFonts()
-    local varnished = gfx.font.new("fonts/Asheville-Sans-14-Bold")
+    local varnished = gfx.font.new("assets/fonts/Asheville-Sans-14-Bold")
     assert(varnished)
     gfx.setFont(varnished)
 end
@@ -38,11 +40,13 @@ function setup()
 
     speedometer = Speedometer(screenWidth, screenHeight)
     lanes = Lanes(screenHeight)
-    background = Background()
+    background_manager = BackgroundManager()
     local playerPosX = screenWidth / 4
 
     player = Player(playerPosX)
     player:move(lanes:getCurrentLane())
+
+    local obstacle = Obstacle()
 end
 
 setup()
@@ -57,7 +61,7 @@ end
 function startGameOver(delta) 
     speedometer:startFlashing()
     gameOverAcc += gameOverTick * delta
-    speedometer:setSkullRatio(gameOverAcc / gameOverMs)
+    speedometer.skull:setRatio(gameOverAcc / gameOverMs)
 
     if gameOverAcc >= gameOverMs then
         print("Game over")
@@ -68,7 +72,7 @@ end
 function resetGameOver()
     speedometer:stopFlashing()
     gameOverAcc = 0
-    speedometer:setSkullRatio(0)
+    speedometer.skull:setRatio(0)
 end
 
 function playdate.update()
@@ -88,7 +92,7 @@ function playdate.update()
         speed = acceleratedChange
     end
 
-    background:scroll(speed)
+    background_manager:scroll(speed)
 
     if playdate.buttonJustPressed(playdate.kButtonUp) then
         changeLane("up")
