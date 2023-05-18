@@ -2,13 +2,11 @@ import "background"
 
 class('BackgroundManager').extends()
 
--- Higher this is, slower the background scrolls.
-local speedDiv <const> = 10
 
-function BackgroundManager:init()
+function BackgroundManager:init(speedDiv)
     print("Initializing background")
     self.x = 0
-    
+    self.speedDiv = speedDiv
     self.backgrounds = {Background(0, 0), Background(0, 0)}
     self.imageWidth = self.backgrounds[1].sprite.width
 
@@ -21,14 +19,14 @@ function BackgroundManager:moveSprites()
     end
 end
 
-function BackgroundManager:scroll(x)
-    if (self.x - (x / speedDiv)) < -self.imageWidth then
+function BackgroundManager:scroll(speed)
+    if (self.x - (speed / self.speedDiv)) < -self.imageWidth then
         -- Move the sprites back to origin, to create a scrolling effect.
         self.x = 0
         self:moveSprites()
     end
 
-    self.x -= (x / speedDiv)
+    self.x -= (speed / self.speedDiv)
 
     self:moveSprites()
 

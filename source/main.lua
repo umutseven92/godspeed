@@ -9,10 +9,13 @@ import "player"
 import "background/background_manager"
 import "lanes"
 import "speedometer/speedometer"
-import "obstacle"
+import "obstacle/obstacle_manager"
 
 local gfx <const> = playdate.graphics
 local ui <const> = playdate.ui
+
+-- Higher this is, slower the background & obstacles scroll.
+local speedDiv <const> = 10
 
 local speedLimit <const> = 50
 local gameOverMs <const> = 3000
@@ -20,13 +23,18 @@ local gameOverTick <const> = 1000
 
 local screenWidth, screenHeight = playdate.display.getSize()
 
+local difficultyIncreaseFreq = 10000
+local spawnFreq = 500
 local gameOverAcc = 0
+local firstRun = true
 
-local background_manager = nil
+local backgroundManager = nil
+local obstacleManager = nil
 local player = nil
 local lanes = nil
 local speedometer = nil
-local obstacles = {}
+
+local difficultyTimer = nil
 
 function setUpFonts()
     local varnished = gfx.font.new("assets/fonts/Asheville-Sans-14-Bold")
@@ -40,13 +48,13 @@ function setup()
 
     speedometer = Speedometer(screenWidth, screenHeight)
     lanes = Lanes(screenHeight)
-    background_manager = BackgroundManager()
-    local playerPosX = screenWidth / 4
 
-    player = Player(playerPosX)
+    obstacleManager = ObstacleManager(lanes.laneMap, screenWidth,speedDiv)
+    backgroundManager = BackgroundManager(speedDiv)
+
+    player = Player(lanes.laneMap.middle)
     player:move(lanes:getCurrentLane())
 
-    local obstacle = Obstacle()
 end
 
 setup()
@@ -64,8 +72,7 @@ function startGameOver(delta)
     speedometer.skull:setRatio(gameOverAcc / gameOverMs)
 
     if gameOverAcc >= gameOverMs then
-        print("Game over")
-        playdate.stop() 
+        gameOver()
     end
 end
 
@@ -75,9 +82,29 @@ function resetGameOver()
     speedometer.skull:setRatio(0)
 end
 
+function gameOver()
+    print("Game over!")
+
+    difficultyTimer:pause()
+    difficultyTimer:remove()
+    playdate.stop()
+end
+
+function updateDifficultyTimer()
+    difficultyTimer = playdate.frameTimer.new(difficultyIncreaseFreq, spawnObstacles)
+    difficultyTimer.repeats = true
+end
+
+local distance = 0
+
 function playdate.update()
     local deltaTime = playdate.getElapsedTime()
     playdate.resetElapsedTime()
+
+    if firstRun then
+        updateDifficultyTimer()
+        firstRun = false
+    end
 
     if playdate.isCrankDocked() then
         playdate.ui.crankIndicator:update()
@@ -90,9 +117,18 @@ function playdate.update()
     if acceleratedChange >= 0 then
         ---@diagnostic disable-next-line: cast-local-type
         speed = acceleratedChange
+        assert(speed ~= nil)
     end
 
-    background_manager:scroll(speed)
+    distance+= (speed / speedDiv)
+
+    if distance > spawnFreq then
+        obstacleManager:spawnRandom()
+        distance = 0
+    end
+
+    backgroundManager:scroll(speed)
+    obstacleManager:scroll(speed)
 
     if playdate.buttonJustPressed(playdate.kButtonUp) then
         changeLane("up")
@@ -113,6 +149,7 @@ function playdate.update()
 
     speedometer:update(speed)
 
+    obstacleManager:clean()
     playdate.frameTimer.updateTimers()
     playdate.timer.updateTimers()
 end

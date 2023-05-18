@@ -6,8 +6,8 @@ local down <const> = "down"
 
 function Lanes:init(screenHeight)
     print("Initializing lanes")
-    self.lanes = { top = screenHeight / 4, middle = screenHeight / 2, bottom = screenHeight - screenHeight / 4 }
-    self.currentLane = self.lanes.middle
+    self.laneMap = { top = screenHeight / 4, middle = screenHeight / 2, bottom = screenHeight - screenHeight / 4 }
+    self.currentLane = self.laneMap.middle
 end
 
 function Lanes:getCurrentLane()
@@ -18,18 +18,18 @@ end
 function Lanes:setLane(direction)
     local oldLane = self.currentLane
     if direction == up then
-        if self.currentLane == self.lanes.middle then
-            self.currentLane = self.lanes.top
-        elseif self.currentLane == self.lanes.bottom
+        if self.currentLane == self.laneMap.middle then
+            self.currentLane = self.laneMap.top
+        elseif self.currentLane == self.laneMap.bottom
         then
-            self.currentLane = self.lanes.middle
+            self.currentLane = self.laneMap.middle
         end
     elseif direction == down then
-        if self.currentLane == self.lanes.middle then
-            self.currentLane = self.lanes.bottom
-        elseif self.currentLane == self.lanes.top
+        if self.currentLane == self.laneMap.middle then
+            self.currentLane = self.laneMap.bottom
+        elseif self.currentLane == self.laneMap.top
         then
-            self.currentLane = self.lanes.middle
+            self.currentLane = self.laneMap.middle
         end
     end
 
