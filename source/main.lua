@@ -8,6 +8,7 @@ import "CoreLibs/ui"
 import "player"
 import "background/background_manager"
 import "lanes"
+import "message"
 import "speedometer/speedometer"
 import "obstacle/obstacle_manager"
 
@@ -27,37 +28,43 @@ local difficultyIncreaseFreq = 10000
 local spawnFreq = 500
 local gameOverAcc = 0
 local firstRun = true
+local gameIsOver = false
+local distance = 0
 
 local backgroundManager = nil
 local obstacleManager = nil
 local player = nil
 local lanes = nil
 local speedometer = nil
-
+local message = nil
 local difficultyTimer = nil
 
 function setUpFonts()
-    local varnished = gfx.font.new("assets/fonts/Asheville-Sans-14-Bold")
+    local varnished = gfx.font.new("assets/fonts/Asheville-Sans-14-Bold-White")
     assert(varnished)
     gfx.setFont(varnished)
 end
 
-function setup()
-    setUpFonts()
-    ui.crankIndicator:start()
-
+function initClasses()
     speedometer = Speedometer(screenWidth, screenHeight)
+    message = Message(screenWidth, screenHeight)
     lanes = Lanes(screenHeight)
 
-    obstacleManager = ObstacleManager(lanes.laneMap, screenWidth,speedDiv)
-    backgroundManager = BackgroundManager(speedDiv)
+    obstacleManager = ObstacleManager(lanes.laneMap, screenWidth)
+    backgroundManager = BackgroundManager()
 
     player = Player(lanes.laneMap.middle)
     player:move(lanes:getCurrentLane())
 
 end
 
-setup()
+function setup()
+    setUpFonts()
+    ui.crankIndicator:start()
+
+    initClasses()
+end
+
 
 function changeLane(direction)
     local changed = lanes:setLane(direction)
@@ -84,10 +91,14 @@ end
 
 function gameOver()
     print("Game over!")
-
+    message:setRestartText() 
+    gameOverAcc = 0
+    distance = 0
+    firstRun = false
     difficultyTimer:pause()
     difficultyTimer:remove()
-    playdate.stop()
+
+    gameIsOver = true
 end
 
 function updateDifficultyTimer()
@@ -95,22 +106,7 @@ function updateDifficultyTimer()
     difficultyTimer.repeats = true
 end
 
-local distance = 0
-
-function playdate.update()
-    local deltaTime = playdate.getElapsedTime()
-    playdate.resetElapsedTime()
-
-    if firstRun then
-        updateDifficultyTimer()
-        firstRun = false
-    end
-
-    if playdate.isCrankDocked() then
-        playdate.ui.crankIndicator:update()
-        return
-    end
-
+function getSpeed() 
     local _, acceleratedChange = playdate.getCrankChange()
 
     local speed = 0
@@ -120,34 +116,98 @@ function playdate.update()
         assert(speed ~= nil)
     end
 
-    distance+= (speed / speedDiv)
+    return speed
+end
 
-    if distance > spawnFreq then
-        obstacleManager:spawnRandom()
-        distance = 0
-    end
-
-    backgroundManager:scroll(speed)
-    obstacleManager:scroll(speed)
-
+function checkInput()
+    
     if playdate.buttonJustPressed(playdate.kButtonUp) then
         changeLane("up")
     end
     if playdate.buttonJustPressed(playdate.kButtonDown) then
         changeLane("down")
     end
+end
 
+function checkRestartInput()
+    if playdate.buttonJustPressed(playdate.kButtonUp) or
+        playdate.buttonJustPressed(playdate.kButtonDown) or
+        playdate.buttonJustPressed(playdate.kButtonLeft) or
+        playdate.buttonJustPressed(playdate.kButtonRight) or
+        playdate.buttonJustPressed(playdate.kButtonA) or
+        playdate.buttonJustPressed(playdate.kButtonB)
+    then
+        resetGame()
+    end
+    
+end
+
+function checkSpeed(speed, deltaTime)
     if speed < speedLimit then
         startGameOver(deltaTime)
+        message:setSpeedUpText() 
     else
         resetGameOver()
+        message:reset()
+    end
+end 
+
+function checkDistance(normSpeed)
+    distance+= normSpeed
+
+    if distance > spawnFreq then
+        obstacleManager:spawnRandom()
+        distance = 0
+    end
+    
+end
+
+function resetGame()
+    print("Restarting game")
+    gfx.sprite.removeAll() 
+    initClasses() 
+    gameIsOver = false
+end
+
+setup()
+
+function playdate.update()
+    local deltaTime = playdate.getElapsedTime()
+    playdate.resetElapsedTime()
+
+    if firstRun and not gameIsOver then
+        updateDifficultyTimer()
+        firstRun = false
     end
 
-    player:update(deltaTime)
+    if playdate.isCrankDocked() then
+        playdate.ui.crankIndicator:update()
+        return
+    end
 
-    gfx.sprite.update()
+    if not gameIsOver then
+        local speed = getSpeed()
+        local normSpeed = speed / speedDiv
 
-    speedometer:update(speed)
+        checkDistance(normSpeed)    
+
+        backgroundManager:scroll(normSpeed)
+        obstacleManager:scroll(normSpeed)
+
+        checkInput()
+
+        checkSpeed(speed, deltaTime)
+
+        player:update(deltaTime)
+
+        gfx.sprite.update()
+
+        speedometer:update(normSpeed)
+    else
+        checkRestartInput()
+    end
+
+    message:update()
 
     obstacleManager:clean()
     playdate.frameTimer.updateTimers()

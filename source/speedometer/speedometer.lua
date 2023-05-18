@@ -5,12 +5,12 @@ class('Speedometer').extends()
 
 local gfx <const> = playdate.graphics
 
--- Higher this is, lower the speed shown in the speedometer.
+-- Higher this is, higher the speed shown in the speedometer.
 -- Does not affect the actual speed.
-local speedDiv <const> = 1.5
+local speedModifier <const> = 10
 
 function Speedometer:init(screenWidth, screenHeight)
-    self.posX = screenWidth * (3.5 / 4)
+    self.posX = screenWidth * (3.65 / 4)
     self.posY = screenHeight * (3.65 / 4)
 
     self.skull = Skull(self.posX - 40, self.posY - 8)
@@ -46,16 +46,9 @@ function Speedometer:stopFlashing()
 end
 
 function Speedometer:update(speed)
-    -- Invert the draw mode & print the speed.
-    -- Draw mode is inverted to make the text white, as the font itself is black.
-    local originalDrawMode = gfx.getImageDrawMode()
-
-    gfx.setImageDrawMode(playdate.graphics.kDrawModeInverted)
-
     if not self.hide then
-        gfx.drawText(string.format("%d", math.floor(speed / speedDiv)), self.posX, self.posY)
+        gfx.drawText(string.format("%d", math.floor(speed * speedModifier)), self.posX, self.posY)
     end
-    gfx.setImageDrawMode(originalDrawMode)
 
     self.skull.sprite:setVisible(self.flashing)
 end

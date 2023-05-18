@@ -3,14 +3,13 @@ import "obstacle"
 class("ObstacleManager").extends()
 
 
-function ObstacleManager:init(laneMap, screenWidth, speedDiv)
+function ObstacleManager:init(laneMap, screenWidth)
     self.spawnMap = {self.spawnBottom, self.spawnMiddle, self.spawnTop, self.spawnTopBottom, self.spawnBottomMiddle, self.spawnTopMiddle, self.spawnStaggered}
 
     self.obstacles = {}
     self.laneMap = laneMap
     self.screenWidth = screenWidth
     self.spawnPosX = screenWidth + 100
-    self.speedDiv = speedDiv
 end
 
 function ObstacleManager:indexLaneMap(i)
@@ -89,6 +88,6 @@ end
 function ObstacleManager:scroll(speed)
 
     for _,v in ipairs(self.obstacles) do
-        v:moveBy(speed / self.speedDiv)
+        v:moveBy(speed)
     end
 end
