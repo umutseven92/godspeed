@@ -1,8 +1,13 @@
 import "CoreLibs/math"
+import "CoreLibs/animation"
+import "CoreLibs/animator"
 import "utils"
 import "base_drawn"
+import "lib/AnimatedSprite.lua"
 
 class('Player').extends(BaseDrawn)
+
+local gfx <const> = playdate.graphics
 
 -- LERP const for position
 -- Higher this is, faster the player changes lanes.
@@ -32,9 +37,19 @@ function Player:init(xPosition)
 
     self.x = xPosition
     self.y = 0
+    self.exploding = false
     
     Player.super.init(self, "assets/images/player", 2, self.x, self.y)
-
+    
+    local explosionTable = gfx.imagetable.new("assets/animations/explosion/explosion")
+    assert(explosionTable)
+    
+    self.explosionAnimation = AnimatedSprite.new(explosionTable)    
+    self.explosionAnimation:setStates({{
+        name = "explode",
+        loop = 1
+    }})
+    
 end
 
 function Player:moveLerp(y)
@@ -56,7 +71,19 @@ function Player:move(y)
     self.sprite:moveTo(self.x, self.y)
 end
 
+function Player:explode()
+    self.sprite:remove()
+    self.explosionAnimation:moveTo(self.x, self.y) 
+    self.explosionAnimation:playAnimation()
+
+    self.exploding = true
+end
+
 function Player:update(delta)
+    if self.exploding then
+        return
+    end
+
     if moveTo ~= nil and moveFrom ~= nil then
         lerpPosT+= (lerpPosConst * delta)
 

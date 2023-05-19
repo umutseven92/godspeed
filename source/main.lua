@@ -91,6 +91,7 @@ end
 
 function gameOver()
     print("Game over!")
+    player:explode()
     message:setRestartText() 
     gameOverAcc = 0
     distance = 0
@@ -164,6 +165,8 @@ end
 
 function resetGame()
     print("Restarting game")
+    message:reset()
+
     gfx.sprite.removeAll() 
     initClasses() 
     gameIsOver = false
@@ -198,14 +201,15 @@ function playdate.update()
 
         checkSpeed(speed, deltaTime)
 
-        player:update(deltaTime)
-
-        gfx.sprite.update()
 
         speedometer:update(normSpeed)
     else
         checkRestartInput()
     end
+
+    player:update(deltaTime)
+
+    gfx.sprite.update()
 
     message:update()
 
