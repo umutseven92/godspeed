@@ -40,9 +40,9 @@ local message = nil
 local difficultyTimer = nil
 
 function setUpFonts()
-    local varnished = gfx.font.new("assets/fonts/Asheville-Sans-14-Bold-White")
-    assert(varnished)
-    gfx.setFont(varnished)
+    local font = gfx.font.new("assets/fonts/Asheville-Sans-14-Bold-White")
+    assert(font)
+    gfx.setFont(font)
 end
 
 function initClasses()

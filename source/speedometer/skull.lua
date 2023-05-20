@@ -1,4 +1,4 @@
-import "base_drawn"
+import "base/base_drawn"
 
 class('Skull').extends(BaseDrawn)
 

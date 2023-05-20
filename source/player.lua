@@ -2,12 +2,14 @@ import "CoreLibs/math"
 import "CoreLibs/animation"
 import "CoreLibs/animator"
 import "utils"
-import "base_drawn"
+import "base/base_drawn_collider"
 import "lib/AnimatedSprite.lua"
 
-class('Player').extends(BaseDrawn)
+class('Player').extends(BaseDrawnCollider)
 
 local gfx <const> = playdate.graphics
+
+local colGroups <const> = {1}
 
 -- LERP const for position
 -- Higher this is, faster the player changes lanes.
@@ -35,13 +37,13 @@ function Player:init(xPosition)
 
     print("Initializing player")
 
-    self.x = xPosition
-    self.y = 0
+    self.posX = xPosition
+    self.posY = 0
     self.exploding = false
     
-    Player.super.init(self, "assets/images/player", 2, self.x, self.y)
+    Player.super.init(self, "assets/images/player", 2, self.posX, self.posY, colGroups)
     
-    local explosionTable = gfx.imagetable.new("assets/animations/explosion/explosion")
+    local explosionTable = gfx.imagetable.new("assets/animations/explosion/player/explosion")
     assert(explosionTable)
     
     self.explosionAnimation = AnimatedSprite.new(explosionTable)    
@@ -55,11 +57,11 @@ end
 function Player:moveLerp(y)
     -- Set the target position & start interpolation.
     moveTo = y
-    moveFrom = self.y
+    moveFrom = self.posY
     lerpPosT = 0
     lerpRotT = 0
     rotateFrom = 0
-    if y > self.y then
+    if y > self.posY then
         rotateTo = rotateAmount  
     else
         rotateTo = -rotateAmount
@@ -67,13 +69,13 @@ function Player:moveLerp(y)
 end
 
 function Player:move(y)
-    self.y = y
-    self.sprite:moveTo(self.x, self.y)
+    self.posY = y
+    self.sprite:moveTo(self.posX, self.posY)
 end
 
 function Player:explode()
     self.sprite:remove()
-    self.explosionAnimation:moveTo(self.x, self.y) 
+    self.explosionAnimation:moveTo(self.posX, self.posY) 
     self.explosionAnimation:playAnimation()
 
     self.exploding = true
