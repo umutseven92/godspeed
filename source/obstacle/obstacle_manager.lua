@@ -75,7 +75,7 @@ end
 function ObstacleManager:clean()
     local temp = {}
     for k,_ in ipairs(self.obstacles) do
-        if self.obstacles[k].posX > 0 then
+        if self.obstacles[k].posX > 0 and self.obstacles[k].posY > 0 then
             table.insert(temp, self.obstacles[k])
         else
             self.obstacles[k]:remove()
@@ -85,8 +85,12 @@ function ObstacleManager:clean()
     self.obstacles = temp
 end
 
-function ObstacleManager:scroll(speed)
+function ObstacleManager:scroll(delta, speed)
     for _,v in ipairs(self.obstacles) do
-        v:moveBy(speed)
+        if v.skidding then
+            v:update(delta)
+        else
+            v:moveBy(speed)
+        end
     end
 end

@@ -71,7 +71,6 @@ end
 function Player:move(y)
     self.posY = y
     local actualX, actualY, collisions, length = self.sprite:moveWithCollisions(self.posX, self.posY)
-
     
     if length > 0 then
         

@@ -197,7 +197,7 @@ function playdate.update()
         checkDistance(normSpeed)    
 
         backgroundManager:scroll(normSpeed)
-        obstacleManager:scroll(normSpeed)
+        obstacleManager:scroll(deltaTime, normSpeed)
 
         checkInput()
 

@@ -12,5 +12,4 @@ function BaseDrawnCollider:init(imageFile, zIndex, posX, posY, colGroups, colWit
     self.sprite:setGroups(colGroups)
     self.sprite:setCollidesWithGroups(colWithGroups)
     self.sprite.collisionResponse = gfx.sprite.kCollisionTypeOverlap
-
 end

@@ -9,6 +9,27 @@ local gfx <const> = playdate.graphics
 local colGroups <const> = {2}
 local imagesPath <const> = "assets/images/obstacles/"
 
+-- LERP const for position
+-- Higher this is, faster the player changes lanes.
+local lerpPosConst <const> = 1.5
+
+-- t value for position LERP
+local lerpPosT = nil
+
+-- LERP const for rotation
+-- Higher this is, faster the player rotates.
+local lerpRotationConst <const> = 2
+
+-- t value for rotation LERP
+local lerpRotT = nil
+
+-- How much to rotate
+local rotateAmount <const> = 5
+
+local moveFrom = nil
+local moveTo = nil
+local rotateFrom = nil
+local rotateTo = nil
 
 function Obstacle:init(posX, posY)
     self.posX = posX
@@ -24,16 +45,15 @@ end
 
 function Obstacle:moveBy(xAmount)
     self.posX -= xAmount
-    self.move(self.posY)
+    self:move(self.posY)
 end
 
 function Obstacle:move(posY)
     self.sprite:moveTo(self.posX, posY)
     local actualX, actualY, collisions, length = self.sprite:moveWithCollisions(self.posX, posY)
     if length > 0 then
-        
+        self:skid()
     end
-
 end
 
 function Obstacle:remove()
@@ -42,13 +62,10 @@ end
 
 function Obstacle:skid()
     self.skidding = true
+    self:moveLerp(-100)
 end
 
 function Obstacle:update(delta)
-    if self.skidding then
-        return
-    end
-
     if moveTo ~= nil and moveFrom ~= nil then
         lerpPosT+= (lerpPosConst * delta)
 
@@ -84,7 +101,6 @@ function Obstacle:update(delta)
         
     end
 end
-
 
 
 function Obstacle:moveLerp(y)
