@@ -41,7 +41,7 @@ function Player:init(xPosition)
     self.posY = 0
     self.exploding = false
     
-    Player.super.init(self, "assets/images/player", 2, self.posX, self.posY, colGroups)
+    Player.super.init(self, "assets/images/player", 2, self.posX, self.posY, colGroups, {2})
     
     local explosionTable = gfx.imagetable.new("assets/animations/explosion/player/explosion")
     assert(explosionTable)
@@ -70,7 +70,12 @@ end
 
 function Player:move(y)
     self.posY = y
-    self.sprite:moveTo(self.posX, self.posY)
+    local actualX, actualY, collisions, length = self.sprite:moveWithCollisions(self.posX, self.posY)
+
+    
+    if length > 0 then
+        
+    end
 end
 
 function Player:explode()

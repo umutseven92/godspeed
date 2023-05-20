@@ -86,7 +86,6 @@ function ObstacleManager:clean()
 end
 
 function ObstacleManager:scroll(speed)
-
     for _,v in ipairs(self.obstacles) do
         v:moveBy(speed)
     end
