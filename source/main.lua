@@ -182,6 +182,8 @@ function playdate.update()
         updateDifficultyTimer()
         firstRun = false
     end
+    
+    gfx.sprite.update()
 
     if playdate.isCrankDocked() then
         playdate.ui.crankIndicator:update()
@@ -201,7 +203,6 @@ function playdate.update()
 
         checkSpeed(speed, deltaTime)
 
-
         speedometer:update(normSpeed)
     else
         checkRestartInput()
@@ -209,7 +210,6 @@ function playdate.update()
 
     player:update(deltaTime)
 
-    gfx.sprite.update()
 
     message:update()
 
