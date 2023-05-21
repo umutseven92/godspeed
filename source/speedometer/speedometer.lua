@@ -4,12 +4,13 @@ import "skull"
 class('Speedometer').extends()
 
 local gfx <const> = playdate.graphics
+local screenWidth <const>, screenHeight <const> = playdate.display.getSize()
 
 -- Higher this is, higher the speed shown in the speedometer.
 -- Does not affect the actual speed.
 local speedModifier <const> = 10
 
-function Speedometer:init(screenWidth, screenHeight)
+function Speedometer:init()
     self.posX = screenWidth * (3.65 / 4)
     self.posY = screenHeight * (3.65 / 4)
 

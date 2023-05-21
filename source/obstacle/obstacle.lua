@@ -1,35 +1,17 @@
 import "base/base_drawn_collider"
 import "lib/AnimatedSprite.lua"
 import "utils"
+import "lerp_helper"
 
 class("Obstacle").extends(BaseDrawnCollider)
 
 local gfx <const> = playdate.graphics
 
+local _, screenHeight <const> = playdate.display.getSize()
+
 local colGroups <const> = {2}
 local imagesPath <const> = "assets/images/obstacles/"
 
--- LERP const for position
--- Higher this is, faster the player changes lanes.
-local lerpPosConst <const> = 1.5
-
--- t value for position LERP
-local lerpPosT = nil
-
--- LERP const for rotation
--- Higher this is, faster the player rotates.
-local lerpRotationConst <const> = 2
-
--- t value for rotation LERP
-local lerpRotT = nil
-
--- How much to rotate
-local rotateAmount <const> = 5
-
-local moveFrom = nil
-local moveTo = nil
-local rotateFrom = nil
-local rotateTo = nil
 
 function Obstacle:init(posX, posY)
     self.posX = posX
@@ -41,19 +23,35 @@ function Obstacle:init(posX, posY)
     local imageFile = imagesPath .. imageFiles[rand]
 
     Obstacle.super.init(self, imageFile, 1, self.posX, self.posY, colGroups, {1})
+    
+    self.lerpHelper = LerpHelper(self)
 end
 
 function Obstacle:moveBy(xAmount)
     self.posX -= xAmount
-    self:move(self.posY)
+    self:move(self.posX, self.posY)
 end
 
-function Obstacle:move(posY)
-    self.sprite:moveTo(self.posX, posY)
-    local actualX, actualY, collisions, length = self.sprite:moveWithCollisions(self.posX, posY)
+function Obstacle:move(posX, posY)
+    self.posX = posX
+    self.posY = posY
+    local actualX, actualY, collisions, length = self.sprite:moveWithCollisions(posX, posY)
+
     if length > 0 then
         self:skid()
     end
+end
+
+function Obstacle:moveLerp(y)
+    -- Set the target position & start interpolation.
+    local rotateTo = 0
+    if y > self.posY then
+        rotateTo = 5 
+    else
+        rotateTo = -5
+    end
+    
+    self.lerpHelper:moveLerp(self.posX, self.posX, self.posY, y, 0, rotateTo, 2, 2)
 end
 
 function Obstacle:remove()
@@ -62,57 +60,19 @@ end
 
 function Obstacle:skid()
     self.skidding = true
-    self:moveLerp(-100)
+    if self.posY > screenHeight / 2 then
+        self:moveLerp(screenHeight + 20)
+    else
+        self:moveLerp(-20)
+    end
 end
 
 function Obstacle:update(delta)
-    if moveTo ~= nil and moveFrom ~= nil then
-        lerpPosT+= (lerpPosConst * delta)
-
-        -- Continue interpolation.
-        local ease = easeOutBack(lerpPosT)
-
-        local y = playdate.math.lerp(moveFrom, moveTo, ease)
-        self:move(y)
-    end
-
-    if rotateTo ~= nil then
-        lerpRotT+= (lerpRotationConst * delta)
-        
-        if lerpRotT > 1 then
-
-            lerpRotT = 0
-            if rotateTo ~= 0 then
-                -- We have rotated, now it is time to rotate back to 0.
-                rotateFrom = rotateTo
-                rotateTo = 0
-            else
-                rotateTo = nil
-                -- Our interpolation is finished; reset everything.
-                self.sprite:setRotation(0)
-
-            end
-        else 
-            -- Continue interpolation.
-            local ease = easeOutBack(lerpRotT)
-            local r = playdate.math.lerp(rotateFrom, rotateTo, ease)
-            self.sprite:setRotation(r)
-        end
-        
+    if self.skidding then
+        self.lerpHelper:update(delta)
     end
 end
 
-
-function Obstacle:moveLerp(y)
-    -- Set the target position & start interpolation.
-    moveTo = y
-    moveFrom = self.posY
-    lerpPosT = 0
-    lerpRotT = 0
-    rotateFrom = 0
-    if y > self.posY then
-        rotateTo = rotateAmount  
-    else
-        rotateTo = -rotateAmount
-    end
+function Obstacle:rotate(r)
+    self.sprite:setRotation(r)    
 end

@@ -3,8 +3,9 @@ class('Lanes').extends()
 local up <const> = "up"
 local down <const> = "down"
 
+local _, screenHeight <const> = playdate.display.getSize()
 
-function Lanes:init(screenHeight)
+function Lanes:init()
     print("Initializing lanes")
     self.laneMap = { top = screenHeight / 4, middle = screenHeight / 2, bottom = screenHeight - screenHeight / 4 }
     self.currentLane = self.laneMap.middle

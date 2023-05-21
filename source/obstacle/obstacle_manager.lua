@@ -2,13 +2,14 @@ import "obstacle"
 
 class("ObstacleManager").extends()
 
+local screenWidth <const>, _ = playdate.display.getSize()
 
-function ObstacleManager:init(laneMap, screenWidth)
+
+function ObstacleManager:init(laneMap)
     self.spawnMap = {self.spawnBottom, self.spawnMiddle, self.spawnTop, self.spawnTopBottom, self.spawnBottomMiddle, self.spawnTopMiddle, self.spawnStaggered}
 
     self.obstacles = {}
     self.laneMap = laneMap
-    self.screenWidth = screenWidth
     self.spawnPosX = screenWidth + 100
 end
 
@@ -85,12 +86,14 @@ function ObstacleManager:clean()
     self.obstacles = temp
 end
 
-function ObstacleManager:scroll(delta, speed)
+function ObstacleManager:scroll(speed)
     for _,v in ipairs(self.obstacles) do
-        if v.skidding then
-            v:update(delta)
-        else
-            v:moveBy(speed)
-        end
+        v:moveBy(speed)
+    end
+end
+
+function ObstacleManager:update(delta)
+    for _,v in ipairs(self.obstacles) do
+        v:update(delta)
     end
 end

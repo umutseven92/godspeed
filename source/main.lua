@@ -22,7 +22,7 @@ local speedLimit <const> = 50
 local gameOverMs <const> = 3000
 local gameOverTick <const> = 1000
 
-local screenWidth, screenHeight = playdate.display.getSize()
+local screenWidth, _ = playdate.display.getSize()
 
 local difficultyIncreaseFreq = 10000
 local spawnFreq = 500
@@ -46,16 +46,14 @@ function setUpFonts()
 end
 
 function initClasses()
-    speedometer = Speedometer(screenWidth, screenHeight)
-    message = Message(screenWidth, screenHeight)
-    lanes = Lanes(screenHeight)
+    speedometer = Speedometer()
+    message = Message()
+    lanes = Lanes()
 
-    obstacleManager = ObstacleManager(lanes.laneMap, screenWidth)
+    obstacleManager = ObstacleManager(lanes.laneMap)
     backgroundManager = BackgroundManager()
 
-    player = Player(lanes.laneMap.middle)
-    player:move(lanes:getCurrentLane())
-
+    player = Player(screenWidth / 4, lanes.laneMap.middle)
 end
 
 function setup()
@@ -174,6 +172,8 @@ end
 
 setup()
 
+local totalSpeed = 0
+
 function playdate.update()
     local deltaTime = playdate.getElapsedTime()
     playdate.resetElapsedTime()
@@ -197,8 +197,8 @@ function playdate.update()
         checkDistance(normSpeed)    
 
         backgroundManager:scroll(normSpeed)
-        obstacleManager:scroll(deltaTime, normSpeed)
-
+        obstacleManager:scroll(normSpeed)
+        obstacleManager:update(deltaTime)
         checkInput()
 
         checkSpeed(speed, deltaTime)
