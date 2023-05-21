@@ -8,7 +8,8 @@ import "CoreLibs/ui"
 import "player"
 import "background/background_manager"
 import "lanes"
-import "message"
+import "ui/message"
+import "ui/score"
 import "speedometer/speedometer"
 import "obstacle/obstacle_manager"
 
@@ -21,6 +22,7 @@ local speedDiv <const> = 10
 local speedLimit <const> = 50
 local gameOverMs <const> = 3000
 local gameOverTick <const> = 1000
+local slowTick <const> = 60
 
 local screenWidth, _ = playdate.display.getSize()
 
@@ -30,7 +32,9 @@ local gameOverAcc = 0
 local firstRun = true
 local gameIsOver = false
 local distance = 0
+local speedModifier = 1
 
+local slowTimer = nil
 local backgroundManager = nil
 local obstacleManager = nil
 local player = nil
@@ -38,6 +42,7 @@ local lanes = nil
 local speedometer = nil
 local message = nil
 local difficultyTimer = nil
+local score = nil
 
 function setUpFonts()
     local font = gfx.font.new("assets/fonts/Asheville-Sans-14-Bold-White")
@@ -45,12 +50,22 @@ function setUpFonts()
     gfx.setFont(font)
 end
 
+function setSpeedModifier(modifier)
+    print("Slowing down..")
+    speedModifier += modifier
+    slowTimer = playdate.frameTimer.new(slowTick, function()
+        print("Resetting slowdown")
+        speedModifier = 1
+    end)
+end
+
+
 function initClasses()
     speedometer = Speedometer()
     message = Message()
+    score = Score()
     lanes = Lanes()
-
-    obstacleManager = ObstacleManager(lanes.laneMap)
+    obstacleManager = ObstacleManager(lanes.laneMap, setSpeedModifier)
     backgroundManager = BackgroundManager()
 
     player = Player(screenWidth / 4, lanes.laneMap.middle)
@@ -88,7 +103,7 @@ function resetGameOver()
 end
 
 function gameOver()
-    print("Game over!")
+    print(string.format("Game over with score %d.", score:getScore()))
     player:explode()
     message:setRestartText() 
     gameOverAcc = 0
@@ -96,7 +111,8 @@ function gameOver()
     firstRun = false
     difficultyTimer:pause()
     difficultyTimer:remove()
-
+    slowTimer:pause()
+    slowTimer:remove()
     gameIsOver = true
 end
 
@@ -172,8 +188,6 @@ end
 
 setup()
 
-local totalSpeed = 0
-
 function playdate.update()
     local deltaTime = playdate.getElapsedTime()
     playdate.resetElapsedTime()
@@ -192,6 +206,9 @@ function playdate.update()
 
     if not gameIsOver then
         local speed = getSpeed()
+        speed /= speedModifier
+        score:addToTotalScore(speed)
+
         local normSpeed = speed / speedDiv
 
         checkDistance(normSpeed)    
@@ -203,15 +220,16 @@ function playdate.update()
 
         checkSpeed(speed, deltaTime)
 
-        speedometer:update(normSpeed)
+        speedometer:update(speed)
     else
+        score:startFlashing()
         checkRestartInput()
     end
 
     player:update(deltaTime)
 
-
     message:update()
+    score:update()
 
     obstacleManager:clean()
     playdate.frameTimer.updateTimers()

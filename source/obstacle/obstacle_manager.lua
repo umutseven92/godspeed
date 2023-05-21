@@ -5,12 +5,13 @@ class("ObstacleManager").extends()
 local screenWidth <const>, _ = playdate.display.getSize()
 
 
-function ObstacleManager:init(laneMap)
+function ObstacleManager:init(laneMap, speedModifierFunc)
     self.spawnMap = {self.spawnBottom, self.spawnMiddle, self.spawnTop, self.spawnTopBottom, self.spawnBottomMiddle, self.spawnTopMiddle, self.spawnStaggered}
 
     self.obstacles = {}
     self.laneMap = laneMap
     self.spawnPosX = screenWidth + 100
+    self.speedModifierFunc = speedModifierFunc
 end
 
 function ObstacleManager:indexLaneMap(i)
@@ -29,7 +30,7 @@ function ObstacleManager:spawnRandom()
 end
 
 function ObstacleManager:spawnObstacle(posX, posY)
-    local obstacle = Obstacle(posX, posY)
+    local obstacle = Obstacle(posX, posY, self.speedModifierFunc)
     table.insert(self.obstacles, obstacle)
 end
 

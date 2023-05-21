@@ -48,11 +48,7 @@ end
 function Player:move(x, y)
     self.posX = x
     self.posY = y
-    local actualX, actualY, collisions, length = self.sprite:moveWithCollisions(self.posX, self.posY)
-
-    if length > 0 then
-
-    end
+    self.sprite:moveWithCollisions(self.posX, self.posY)
 end
 
 function Player:rotate(r)

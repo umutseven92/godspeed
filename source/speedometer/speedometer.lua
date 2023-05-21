@@ -5,10 +5,7 @@ class('Speedometer').extends()
 
 local gfx <const> = playdate.graphics
 local screenWidth <const>, screenHeight <const> = playdate.display.getSize()
-
--- Higher this is, higher the speed shown in the speedometer.
--- Does not affect the actual speed.
-local speedModifier <const> = 10
+local flashFrames <const> = 15
 
 function Speedometer:init()
     self.posX = screenWidth * (3.65 / 4)
@@ -29,7 +26,7 @@ function Speedometer:startFlashing()
     end
     self.flashing = true
     self.hide = true
-    self.flashTimer = playdate.frameTimer.new(15, function()
+    self.flashTimer = playdate.frameTimer.new(flashFrames, function()
         self.hide = not self.hide
     end)
     self.flashTimer.repeats = true
@@ -48,7 +45,7 @@ end
 
 function Speedometer:update(speed)
     if not self.hide then
-        gfx.drawText(string.format("%d", math.floor(speed * speedModifier)), self.posX, self.posY)
+        gfx.drawText(string.format("%d", math.floor(speed)), self.posX, self.posY)
     end
 
     self.skull.sprite:setVisible(self.flashing)

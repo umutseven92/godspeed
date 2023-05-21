@@ -5,15 +5,13 @@ import "lerp_helper"
 
 class("Obstacle").extends(BaseDrawnCollider)
 
-local gfx <const> = playdate.graphics
-
 local _, screenHeight <const> = playdate.display.getSize()
 
 local colGroups <const> = {2}
 local imagesPath <const> = "assets/images/obstacles/"
 
 
-function Obstacle:init(posX, posY)
+function Obstacle:init(posX, posY, speedModifierFunc)
     self.posX = posX
     self.posY = posY
     self.skidding = false
@@ -25,6 +23,9 @@ function Obstacle:init(posX, posY)
     Obstacle.super.init(self, imageFile, 1, self.posX, self.posY, colGroups, {1})
     
     self.lerpHelper = LerpHelper(self)
+    self.speedModifierFunc = speedModifierFunc
+
+    self.collided = false
 end
 
 function Obstacle:moveBy(xAmount)
@@ -35,9 +36,15 @@ end
 function Obstacle:move(posX, posY)
     self.posX = posX
     self.posY = posY
-    local actualX, actualY, collisions, length = self.sprite:moveWithCollisions(posX, posY)
+    local _, _, _, length = self.sprite:moveWithCollisions(posX, posY)
+
+    if self.collided then
+        -- Each obstacle can be collided only once, so return if we already did.
+        return
+    end
 
     if length > 0 then
+        self.speedModifierFunc(2)
         self:skid()
     end
 end
@@ -59,6 +66,7 @@ function Obstacle:remove()
 end
 
 function Obstacle:skid()
+    self.collided = true
     self.skidding = true
     if self.posY > screenHeight / 2 then
         self:moveLerp(screenHeight + 20)
