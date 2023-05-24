@@ -1,10 +1,10 @@
 import "CoreLibs/math"
 import "CoreLibs/animation"
 import "CoreLibs/utilities/where"
-import "utils"
+import "helpers/utils"
 import "base/base_drawn_collider"
 import "lib/AnimatedSprite.lua"
-import "lerp_helper"
+import "helpers/lerp_helper"
 
 class('Player').extends(BaseDrawnCollider)
 
@@ -34,7 +34,7 @@ function Player:init(posX, posY)
 end
 
 function Player:moveLerp(y)
-    -- Set the target position & start interpolation.
+    -- Set target & start LERPing.
     local rotateTo = 0
     if y > self.posY then
         rotateTo = 5
@@ -46,6 +46,7 @@ function Player:moveLerp(y)
 end
 
 function Player:move(x, y)
+    -- Move without LERPing.
     self.posX = x
     self.posY = y
     self.sprite:moveWithCollisions(self.posX, self.posY)

@@ -1,4 +1,4 @@
--- All copied from https://easings.net/.
+-- Easing functions, transpiled from https://easings.net/.
 
 function easeOutCubic(t)
     return 1 - (1 - t) ^ 3
@@ -27,16 +27,4 @@ end
 
 function easeInSine(t)
     return 1 - math.cos((t * math.pi) / 2);
-end
-
-function getRandomElement(collection)
-    local rand = math.random(#collection)
-
-    acc = 1
-    for k, v in pairs(collection) do
-        if rand == acc then
-            return k, v
-        end
-        acc+=1
-    end
 end

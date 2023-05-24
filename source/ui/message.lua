@@ -1,4 +1,4 @@
-import "utils"
+import "helpers/utils"
 
 local gfx <const> = playdate.graphics
 local screenWidth <const>, screenHeight <const> = playdate.display.getSize()
@@ -8,6 +8,7 @@ local restartText <const> = "Press any key to restart"
 
 local message = nil
 
+-- UI element that shows text messages to the player. When the player goes below a certain speed we show a random `speedUpText`, and when the game is over, we show `restartText`.
 class("Message").extends()
 
 function Message:init()

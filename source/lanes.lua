@@ -1,3 +1,4 @@
+-- The three lanes the player will drive on. The lanes can be switched by the up & down buttons.
 class('Lanes').extends()
 
 local up <const> = "up"
@@ -11,12 +12,10 @@ function Lanes:init()
     self.currentLane = self.laneMap.middle
 end
 
-function Lanes:getCurrentLane()
-    return self.currentLane
-end
-
--- Returns whether the lane changed.
 function Lanes:setLane(direction)
+    -- Change the current lane. The player can only change to adjacent lanes, and only if the lane they want to change to is not out of bounds. 
+    -- Returns a boolean representing whether the player can change a lane.
+
     local oldLane = self.currentLane
     if direction == up then
         if self.currentLane == self.laneMap.middle then

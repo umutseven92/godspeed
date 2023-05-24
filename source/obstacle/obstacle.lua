@@ -1,7 +1,7 @@
 import "base/base_drawn_collider"
 import "lib/AnimatedSprite.lua"
-import "utils"
-import "lerp_helper"
+import "helpers/utils"
+import "helpers/lerp_helper"
 
 class("Obstacle").extends(BaseDrawnCollider)
 

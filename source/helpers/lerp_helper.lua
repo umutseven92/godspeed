@@ -1,11 +1,15 @@
+import "easing"
+
+-- Helper class for LERPing. Supports position & rotation.
 class("LerpHelper").extends()
 
 function LerpHelper:init(entity)
+    -- Entity is the class that will be LERPed.
     self.entity = entity
 end
 
 function LerpHelper:moveLerp(currentX, toX, currentY, toY, currentR, toR, lerpPosConst, lerpRotationConst)
-    -- Set the target position & start interpolation.
+    -- Set the target position, rotation & start interpolation.
     self.moveToX, self.moveToY = toX, toY
     self.moveFromX, self.moveFromY = currentX, currentY
     self.rotateFrom, self.rotateTo = currentR, toR
@@ -24,6 +28,7 @@ end
 
 
 function LerpHelper:update(delta)
+    -- Increment the lerp by one tick.
     if self.moveToX ~= nil and self.moveFromX ~= nil and self.moveToY ~= nil and self.moveFromY ~= nil then
         self.lerpPosT+= (self.lerpPosConst * delta)
 

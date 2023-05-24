@@ -1,5 +1,6 @@
 import "obstacle"
 
+-- This class manages all obstacles & their lifecycles.
 class("ObstacleManager").extends()
 
 local screenWidth <const>, _ = playdate.display.getSize()
@@ -74,7 +75,8 @@ function ObstacleManager:spawnMiddle()
     self:spawnObstacle(self.spawnPosX, self.laneMap.middle)
 end
 
-function ObstacleManager:clean()
+function ObstacleManager:removeOutOfBounds()
+    -- Remove all obstacles that are out of the screen.
     local temp = {}
     for k,_ in ipairs(self.obstacles) do
         if self.obstacles[k].posX > 0 and self.obstacles[k].posY > 0 then

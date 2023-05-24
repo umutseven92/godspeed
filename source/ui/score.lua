@@ -2,9 +2,13 @@
 local gfx <const> = playdate.graphics
 local screenWidth <const>, screenHeight <const> = playdate.display.getSize()
 
+-- This gets divided by the score before being added to the total score. Without it the score gets too large.
 local scoreDiv <const> = 100
+
+-- How quick the flashing is. Lower this is, more often the flashing.
 local flashFrames <const> = 15
 
+-- UI element that shows the score. Flashes after the game is over.
 class("Score").extends()
 
 function Score:init()
@@ -16,7 +20,7 @@ function Score:init()
 end
 
 function Score:addToTotalScore(score)
-    self.totalScore += score
+    self.totalScore += math.floor(score / scoreDiv)
 end
 
 function Score:startFlashing()
@@ -31,12 +35,8 @@ function Score:startFlashing()
     self.flashTimer.repeats = true
 end
 
-function Score:getScore()
-    return math.floor(self.totalScore / scoreDiv)
-end
-
 function Score:update()
     if not self.hide then
-        gfx.drawText(self:getScore(), self.posX, self.posY)
+        gfx.drawText(self.totalScore, self.posX, self.posY)
     end
 end
