@@ -20,6 +20,8 @@ import "obstacle/obstacle_manager"
 
 local gfx <const> = playdate.graphics
 local ui <const> = playdate.ui
+local sound <const> = playdate.sound
+
 local screenWidth <const>, _ = playdate.display.getSize()
 
 -- Higher this is, slower the background & obstacles scroll.
@@ -61,23 +63,11 @@ local speedometer = nil
 local message = nil
 local score = nil
 
-function setUpFonts()
-    local font = gfx.font.new("assets/fonts/Asheville-Sans-14-Bold-White")
-    assert(font)
-    gfx.setFont(font)
-end
+local musicPlayer = nil
 
-function setSpeedModifier(modifier)
-    -- Set the speed modifier. The speed modifier will reset back to 1 after `slowTick` ticks.
-    print("Slowing down..")
-    speedModifier += modifier
-    slowTimer = playdate.frameTimer.new(slowTick, function()
-        print("Resetting slowdown")
-        speedModifier = 1
-    end)
-end
+--#region Setup 
 
-function initClasses()
+function setUpClasses()
     speedometer = Speedometer()
     message = Message()
     score = Score()
@@ -88,12 +78,28 @@ function initClasses()
     player = Player(screenWidth / 4, lanes.laneMap.middle)
 end
 
+function setUpFonts()
+    local font = gfx.font.new("assets/fonts/Asheville-Sans-14-Bold-White")
+    assert(font)
+    gfx.setFont(font)
+end
+
+function setUpSound()
+    musicPlayer = sound.fileplayer.new("assets/sounds/theme")
+    assert(musicPlayer)
+    musicPlayer:setLoopRange(25.6, 38.4)
+    musicPlayer:play(0)
+end
+
 function setup()
     setUpFonts()
     ui.crankIndicator:start()
 
-    initClasses()
+    setUpClasses()
+    setUpSound()
 end
+
+--#endregion
 
 function changeLane(direction)
     local changed = lanes:setLane(direction)
@@ -199,8 +205,18 @@ function resetGame()
     message:reset()
 
     gfx.sprite.removeAll()
-    initClasses()
+    setUpClasses()
     gameIsOver = false
+end
+
+function setSpeedModifier(modifier)
+    -- Set the speed modifier. The speed modifier will reset back to 1 after `slowTick` ticks.
+    print("Slowing down..")
+    speedModifier += modifier
+    slowTimer = playdate.frameTimer.new(slowTick, function()
+        print("Resetting slowdown")
+        speedModifier = 1
+    end)
 end
 
 setup()
@@ -258,7 +274,7 @@ function playdate.update()
     score:update()
 
     obstacleManager:removeOutOfBounds()
-    
+
     playdate.frameTimer.updateTimers()
     playdate.timer.updateTimers()
 end
