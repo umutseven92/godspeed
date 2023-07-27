@@ -50,7 +50,7 @@ local gameIsOver = false
 -- The distance the player has gone. Gets reset after every time obstacles spawn.
 local distance = 0
 
--- `speedModifier` gets divided by crank speed to determine player speed. Useful for slowing down / speeding up player.
+-- `speedModifier` gets divided by crank speed to determine player speed. Used for slowing down / speeding up player.
 local speedModifier = 1
 
 local backgroundManager = nil
@@ -68,6 +68,7 @@ function setUpFonts()
 end
 
 function setSpeedModifier(modifier)
+    -- Set the speed modifier. The speed modifier will reset back to 1 after `slowTick` ticks.
     print("Slowing down..")
     speedModifier += modifier
     slowTimer = playdate.frameTimer.new(slowTick, function()
@@ -75,7 +76,6 @@ function setSpeedModifier(modifier)
         speedModifier = 1
     end)
 end
-
 
 function initClasses()
     speedometer = Speedometer()
@@ -94,7 +94,6 @@ function setup()
 
     initClasses()
 end
-
 
 function changeLane(direction)
     local changed = lanes:setLane(direction)
@@ -135,11 +134,13 @@ function gameOver()
 end
 
 function updateDifficultyTimer()
+    -- This initialises the difficulty timer, which spawns obstacles via the `spawnObstacles` function every `difficultyIncreseFreq` ticks.
     difficultyTimer = playdate.frameTimer.new(difficultyIncreaseFreq, spawnObstacles)
     difficultyTimer.repeats = true
 end
 
 function getSpeed()
+    -- Get the base speed, which comes from how fast the crank is being cranked.
     local _, acceleratedChange = playdate.getCrankChange()
 
     local speed = 0
@@ -153,6 +154,7 @@ function getSpeed()
 end
 
 function checkInput()
+    -- Only two controls, up and down for changing lanes.
     if playdate.buttonJustPressed(playdate.kButtonUp) then
         changeLane("up")
     end
@@ -171,7 +173,6 @@ function checkRestartInput()
     then
         resetGame()
     end
-
 end
 
 function checkSpeedForGameOver(speed, deltaTime)
@@ -185,13 +186,12 @@ function checkSpeedForGameOver(speed, deltaTime)
 end
 
 function checkDistanceForSpawningObstacles(normSpeed)
-    distance+= normSpeed
+    distance += normSpeed
 
     if distance > spawnFreq then
         obstacleManager:spawnRandom()
         distance = 0
     end
-
 end
 
 function resetGame()
@@ -224,11 +224,15 @@ function playdate.update()
     end
 
     if not gameIsOver then
+        -- Main game loop
         local speed = getSpeed()
         speed /= speedModifier
         score:addToTotalScore(speed)
 
-        -- The actual speed can be too much for scrolling & obstacles, so we normalise it.
+        --[[
+        The actual speed can be too much for scrolling & obstacles, so we divide it by `speedDiv`.
+        The user will still see the actual speed in the speedometer, but the actual speed of the player & obstacles will be this divided speed.
+        --]]
         local normSpeed = speed / speedDiv
 
         checkDistanceForSpawningObstacles(normSpeed)
@@ -242,6 +246,7 @@ function playdate.update()
 
         speedometer:update(speed)
     else
+        -- Game over loop
         score:startFlashing()
         checkRestartInput()
     end
@@ -252,6 +257,7 @@ function playdate.update()
     score:update()
 
     obstacleManager:removeOutOfBounds()
+    
     playdate.frameTimer.updateTimers()
     playdate.timer.updateTimers()
 end
