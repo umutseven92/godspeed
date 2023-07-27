@@ -55,7 +55,6 @@ Dodge obstacles while making sure not to slow down. Every obstacle you hit, you 
 
 #### Sounds
 
-* Music
 * Car whirring
 * Lane change (tire screech)
 * Car crash

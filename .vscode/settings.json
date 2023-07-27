@@ -1,4 +1,8 @@
 {
     "playdate.source": "source",
     "playdate.output": "out/godspeed.pdx",
+    "Lua.workspace.ignoreDir": [
+        ".vscode",
+        "lib/**"
+    ]
 }
