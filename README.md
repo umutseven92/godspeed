@@ -42,9 +42,23 @@ Dodge obstacles while making sure not to slow down. Every obstacle you hit, you 
 
 ## Todo
 
+### Code
+
 * Testing and polishing, especially slowing down
 * Difficulty curve as time goes on
 * LERP speed & scrolling
 * Quick intro ("CRANK IT UP!")
 * Localisation
 * Music & sound effects
+
+### Assets
+
+#### Sounds
+
+* Music
+* Car whirring
+* Lane change (tire screech)
+* Car crash
+* Bomb beeping
+* Explosion
+* Game over jingle

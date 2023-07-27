@@ -219,6 +219,7 @@ function playdate.update()
     gfx.sprite.update()
 
     if playdate.isCrankDocked() then
+        -- Sicne the crank is require to play the game, if the crank is docked, just show the crank indicator and do nothing else.
         playdate.ui.crankIndicator:update()
         return
     end
