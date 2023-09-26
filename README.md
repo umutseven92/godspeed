@@ -24,11 +24,11 @@
 
 ## How to Play
 
-Dodge obstacles while making sure not to slow down. Every obstacle you hit, you slow down. If you don't crank hard enough, you slow down. If you slow down too much, you explode! How far can you go?
+Dodge obstacles while making sure not to slow down. Every obstacle you hit, you slow down. If you don't mash A or B hard enough, you slow down. If you slow down too much, you explode! How far can you go?
 
 * <kbd>↑</kbd> to move up one lane
 * <kbd>↓</kbd> to move down one lane
-* Turn the <kbd>Crank</kbd> to speed up
+* Mas <kbd>A</kbd> or <kbd>B</kbd> to speed up
 
 ## Third Party Libraries & Assets Used
 
@@ -47,7 +47,7 @@ Dodge obstacles while making sure not to slow down. Every obstacle you hit, you 
 * Testing and polishing, especially slowing down
 * Difficulty curve as time goes on
 * LERP speed & scrolling
-* Quick intro ("CRANK IT UP!")
+* Quick intro ("START MASHING")
 * Localisation
 * Music & sound effects
 

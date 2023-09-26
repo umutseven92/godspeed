@@ -1,6 +1,6 @@
 --[[
     Godspeed is a simple game, inspired by the movie Speed, where you drive a bus in the highway full of obstacles. If you go slower than a certain speed, you explode. Hitting obstacles slows you down.
-    The game goes on forever, and there is a score. You gain speed by turning the crank, and change lanes by the up & down buttons.
+    The game goes on forever, and there is a score. You gain speed by mashing the A or B button, and change lanes by the up & down buttons.
 ]]
 
 import "CoreLibs/object"
@@ -24,8 +24,16 @@ local sound <const> = playdate.sound
 
 local screenWidth <const>, _ = playdate.display.getSize()
 
+local playerSpeed = 0
+
 -- Higher this is, slower the background & obstacles scroll.
 local speedDiv <const> = 10
+
+-- Higher this is, the more speed the button input adds.
+local speedInputMod <const> = 200
+
+-- How fast the player slows down if the button is not tapped.
+local slowMod <const> = 5
 
 -- If the player goes below `speedLimit` for `gameOverMs` / `gameOverTick` seconds, the game is over.
 local speedLimit <const> = 50
@@ -52,7 +60,7 @@ local gameIsOver = false
 -- The distance the player has gone. Gets reset after every time obstacles spawn.
 local distance = 0
 
--- `speedModifier` gets divided by crank speed to determine player speed. Used for slowing down / speeding up player.
+-- `speedModifier` gets divided by speed to determine player speed. Used for slowing down / speeding up player.
 local speedModifier = 1
 
 local backgroundManager = nil
@@ -65,7 +73,7 @@ local score = nil
 
 local musicPlayer = nil
 
---#region Setup 
+--#region Setup
 
 function setUpClasses()
     speedometer = Speedometer()
@@ -93,7 +101,6 @@ end
 
 function setup()
     setUpFonts()
-    ui.crankIndicator:start()
 
     setUpClasses()
     setUpSound()
@@ -134,8 +141,11 @@ function gameOver()
     firstRun = false
     difficultyTimer:pause()
     difficultyTimer:remove()
-    slowTimer:pause()
-    slowTimer:remove()
+
+    if slowTimer ~= nil then
+        slowTimer:pause()
+        slowTimer:remove()
+    end
     gameIsOver = true
 end
 
@@ -145,18 +155,22 @@ function updateDifficultyTimer()
     difficultyTimer.repeats = true
 end
 
-function getSpeed()
-    -- Get the base speed, which comes from how fast the crank is being cranked.
-    local _, acceleratedChange = playdate.getCrankChange()
 
-    local speed = 0
-    if acceleratedChange >= 0 then
-        ---@diagnostic disable-next-line: cast-local-type
-        speed = acceleratedChange
-        assert(speed ~= nil)
+function getSpeed()
+    -- Get the base speed, which comes from how fast the A or B buttons are being pressed.
+
+    if playdate.buttonJustPressed(playdate.kButtonA) or playdate.buttonJustPressed(playdate.kButtonB) then
+        playerSpeed = speedInputMod
+        assert(playerSpeed ~= nil)
+    else
+        if playerSpeed <= 0 then
+            playerSpeed = 0
+        else
+            playerSpeed -= slowMod
+        end
     end
 
-    return speed
+    return playerSpeed
 end
 
 function checkInput()
@@ -233,12 +247,6 @@ function playdate.update()
 
     -- This needs to be called before drawing text, or the text won't appear.
     gfx.sprite.update()
-
-    if playdate.isCrankDocked() then
-        -- Sicne the crank is require to play the game, if the crank is docked, just show the crank indicator and do nothing else.
-        playdate.ui.crankIndicator:update()
-        return
-    end
 
     if not gameIsOver then
         -- Main game loop

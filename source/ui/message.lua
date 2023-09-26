@@ -3,7 +3,10 @@ import "helpers/utils"
 local gfx <const> = playdate.graphics
 local screenWidth <const>, screenHeight <const> = playdate.display.getSize()
 
-local speedUpText <const> = { "Crank it up!", "Speed up!", "Go! Go! GO!", "I hear beeping!", "Floor it!", "Step on it!", "I'm too young to die!" }
+-- Small, humorous snippets from the perspective of the passangers of the bus, to be displayed randomly when the bomb is about to explode.
+local speedUpText <const> = { "Mash it!!!", "Speed up!", "Go! Go! GO!", "I hear beeping!", "Floor it!", "Step on it!",
+    "I'm too young to die!", "I knew I should have taken the next bus!", "I picked the wrong day to quit sniffing glue!",
+    "I never told him I loved him!", "I never told her I loved her!" }
 local restartText <const> = "Press any key to restart"
 
 local message = nil
@@ -29,7 +32,6 @@ end
 function Message:reset()
     message = nil
 end
-
 
 function Message:update()
     if message ~= nil then
