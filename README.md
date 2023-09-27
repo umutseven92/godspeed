@@ -1,11 +1,10 @@
-
 # Godspeed
 
 ![A schoolbus on fire, flying towards the screen](source/assets/images/meta/card.png "Godspeed")
 
 **One schoolbus, one ticking bomb, only one way to- forward. Godspeed.**
 
-**Godspeed** is a simple game for Playdate, inspired by the movie [Speed](https://www.imdb.com/title/tt0111257/?ref_=fn_al_tt_1). You play as a bus, speding down a highway full of obstacles, and you cannot afford to slow down.
+**Godspeed** is a simple game for Playdate, inspired by the movie [Speed](https://www.imdb.com/title/tt0111257/?ref_=fn_al_tt_1). You play as a bus, speding down a highway full of obstacles, and if you slow down, the bomb explodes.
 
 ## Requirements
 
@@ -24,40 +23,22 @@
 
 ## How to Play
 
-Dodge obstacles while making sure not to slow down. Every obstacle you hit, you slow down. If you don't mash A or B hard enough, you slow down. If you slow down too much, you explode! How far can you go?
+Every obstacle you hit, you slow down. If you don't mash A hard enough, you slow down. If you slow down too much, you explode! How far can you go?
 
 * <kbd>↑</kbd> to move up one lane
 * <kbd>↓</kbd> to move down one lane
-* Mas <kbd>A</kbd> or <kbd>B</kbd> to speed up
+* Mash <kbd>A</kbd> to speed up
+* Press <kbd>B</kbd> to restart the game after exploding
 
 ## Third Party Libraries & Assets Used
 
-* [AnimatedSprite](https://github.com/Whitebrim/AnimatedSprite) by [Whitebrim](https://github.com/Whitebrim)
-* Asheville Sans font
+* [AnimatedSprite](https://github.com/Whitebrim/AnimatedSprite) by [Whitebrim](https://github.com/Whitebrim) (MIT)
+* [Car engine sound effect](https://freesound.org/people/MarlonHJ/sounds/242740/) by MarlonHJ (CC0)
+* [Crash crash sound effect](https://freesound.org/people/Eponn/sounds/420356/) by Eponn (CC0)
+* [Explosion sound effect](https://freesound.org/people/tommccann/sounds/235968/) by tommccann (CC0)
+* [Bomb beep sound effect](https://freesound.org/people/snakebarney/sounds/138108/) by snakebarney (CC0)
 
 ## Licenses
 
 * All the code, that is, everything under the `source/` folder, except `source/lib` and `source/assets/`, is licensed under the [MIT License](LICENSE).
 * All the assets and asset data files, that is, everything under the `source/assets/` and `support/` folders, except `source/assets/fonts`, are licensed under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/).
-
-## Todo
-
-### Code
-
-* Testing and polishing, especially slowing down
-* Difficulty curve as time goes on
-* LERP speed & scrolling
-* Quick intro ("START MASHING")
-* Localisation
-* Music & sound effects
-
-### Assets
-
-#### Sounds
-
-* Car whirring
-* Lane change (tire screech)
-* Car crash
-* Bomb beeping
-* Explosion
-* Game over jingle

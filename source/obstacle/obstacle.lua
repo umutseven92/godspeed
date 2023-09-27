@@ -2,6 +2,7 @@ import "base/base_drawn_collider"
 import "lib/AnimatedSprite.lua"
 import "helpers/utils"
 import "helpers/lerp_helper"
+import "audio/crash_player"
 
 class("Obstacle").extends(BaseDrawnCollider)
 
@@ -10,6 +11,7 @@ local _, screenHeight <const> = playdate.display.getSize()
 local colGroups <const> = {2}
 local imagesPath <const> = "assets/images/obstacles/"
 
+local crashPlayer = nil
 
 function Obstacle:init(posX, posY, speedModifierFunc)
     self.posX = posX
@@ -21,7 +23,7 @@ function Obstacle:init(posX, posY, speedModifierFunc)
     local imageFile = imagesPath .. imageFiles[rand]
 
     Obstacle.super.init(self, imageFile, 1, self.posX, self.posY, colGroups, {1})
-    
+    crashPlayer = CrashPlayer()
     self.lerpHelper = LerpHelper(self)
     self.speedModifierFunc = speedModifierFunc
 
@@ -44,6 +46,7 @@ function Obstacle:move(posX, posY)
     end
 
     if length > 0 then
+        crashPlayer:play()
         self.speedModifierFunc(2)
         self:skid()
     end

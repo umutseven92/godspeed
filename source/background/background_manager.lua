@@ -1,6 +1,6 @@
 import "background"
 
-class('BackgroundManager').extends()
+class("BackgroundManager").extends()
 
 
 function BackgroundManager:init()

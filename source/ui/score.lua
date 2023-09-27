@@ -1,6 +1,7 @@
-
 local gfx <const> = playdate.graphics
 local screenWidth <const>, screenHeight <const> = playdate.display.getSize()
+
+local message <const> = "Score: %d"
 
 -- This gets divided by the score before being added to the total score. Without it the score gets too large.
 local scoreDiv <const> = 100
@@ -12,7 +13,7 @@ local flashFrames <const> = 15
 class("Score").extends()
 
 function Score:init()
-    self.posX = screenWidth- screenWidth * (3.8 / 4)
+    self.posX = screenWidth - screenWidth * (3.8 / 4)
     self.posY = screenHeight * (0.1 / 4)
     self.totalScore = 0
     self.hide = false
@@ -37,6 +38,6 @@ end
 
 function Score:update()
     if not self.hide then
-        gfx.drawText(self.totalScore, self.posX, self.posY)
+        gfx.drawText(string.format(message, self.totalScore), self.posX, self.posY)
     end
 end

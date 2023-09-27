@@ -2,7 +2,7 @@ import "CoreLibs/frameTimer"
 import "skull"
 
 -- Simple speedometer that flashes when the player is below a certain speed.
-class('Speedometer').extends()
+class("Speedometer").extends()
 
 local gfx <const> = playdate.graphics
 local screenWidth <const>, screenHeight <const> = playdate.display.getSize()

@@ -1,7 +1,7 @@
 import "base/base_drawn"
 
 -- Part of the speedometer, the skull shows the player how close they are to exploding.
-class('Skull').extends(BaseDrawn)
+class("Skull").extends(BaseDrawn)
 
 function Skull:init(posX, posY)
     Skull.super.init(self, "assets/images/skull", 10, posX, posY)

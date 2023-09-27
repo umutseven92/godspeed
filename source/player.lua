@@ -5,12 +5,16 @@ import "helpers/utils"
 import "base/base_drawn_collider"
 import "lib/AnimatedSprite.lua"
 import "helpers/lerp_helper"
+import "audio/explosion_player"
+import "audio/skid_player"
 
-class('Player').extends(BaseDrawnCollider)
+class("Player").extends(BaseDrawnCollider)
 
 local gfx <const> = playdate.graphics
-
 local colGroups <const> = { 1 }
+
+local explosionPlayer = nil
+local skidPlayer = nil
 
 function Player:init(posX, posY)
     print("Initializing player")
@@ -30,6 +34,9 @@ function Player:init(posX, posY)
         loop = 1
     } })
 
+    explosionPlayer = ExplosionPlayer()
+    skidPlayer = SkidPlayer()
+
     self.lerpHelper = LerpHelper(self)
 end
 
@@ -41,6 +48,7 @@ function Player:moveLerp(y)
     else
         rotateTo = -5
     end
+    skidPlayer:play()
 
     self.lerpHelper:moveLerp(self.posX, self.posX, self.posY, y, 0, rotateTo, 1.5, 2)
 end
@@ -60,6 +68,7 @@ function Player:explode()
     self.sprite:remove()
     self.explosionAnimation:moveTo(self.posX, self.posY)
     self.explosionAnimation:playAnimation()
+    explosionPlayer:play()
 
     self.exploding = true
 end

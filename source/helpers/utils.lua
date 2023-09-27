@@ -1,4 +1,3 @@
-
 function getRandomElement(collection)
     local rand = math.random(#collection)
 
@@ -7,6 +6,6 @@ function getRandomElement(collection)
         if rand == acc then
             return k, v
         end
-        acc+=1
+        acc += 1
     end
 end

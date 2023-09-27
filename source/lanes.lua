@@ -1,5 +1,5 @@
 -- The three lanes the player will drive on. The lanes can be switched by the up & down buttons.
-class('Lanes').extends()
+class("Lanes").extends()
 
 local up <const> = "up"
 local down <const> = "down"
