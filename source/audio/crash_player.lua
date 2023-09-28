@@ -5,7 +5,7 @@ import "sfx_player"
 class("CrashPlayer").extends("SFXPlayer")
 
 function CrashPlayer:init()
-    CrashPlayer.super.init(self, "assets/sounds/crash")
+    CrashPlayer.super.init(self, "assets/sounds/crash", 0.8)
 end
 
 function CrashPlayer:play()

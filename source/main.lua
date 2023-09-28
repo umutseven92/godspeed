@@ -49,7 +49,7 @@ local slowTick <const> = 60
 local slowTimer = nil
 
 -- How often (in frames) will difficulty increase.
-local difficultyIncreaseFreq = 10000
+local difficultyIncreaseFreq = 300
 local difficultyTimer = nil
 
 -- How often (in distance) will obstacles spawn.
@@ -87,6 +87,8 @@ local musicPlayer = nil
 local enginePlayer = nil
 local beepPlayer = nil
 
+local difficulty = 0
+
 function setUpClasses()
     speedometer = Speedometer()
     highScore = HighScore()
@@ -96,7 +98,7 @@ function setUpClasses()
     tutorial = Tutorial()
     obstacleManager = ObstacleManager(lanes.laneMap, setSpeedModifier)
     backgroundManager = BackgroundManager()
-    player = Player(screenWidth / 4, lanes.laneMap.middle)
+    player = Player(screenWidth / 6, lanes.laneMap.middle)
 
     musicPlayer = MusicPlayer()
     enginePlayer = EnginePlayer()
@@ -125,7 +127,7 @@ function startGameOver(delta)
     -- When the player goes below the limit, we flash the speedometer & show a "progress bar" in the shape of a skull.
     speedometer:startFlashing()
     gameOverAcc += gameOverTick * delta
-    speedometer.skull:setRatio(gameOverAcc / gameOverMs)
+    speedometer:setSkullRatio(gameOverAcc / gameOverMs)
 
     if gameOverAcc >= gameOverMs / 1.5 then
         beepPlayer:playFastBeep()
@@ -141,7 +143,8 @@ end
 function resetGameOver()
     speedometer:stopFlashing()
     gameOverAcc = 0
-    speedometer.skull:setRatio(0)
+    speedometer:setSkullRatio(0)
+
     beepPlayer:stop()
 end
 
@@ -169,8 +172,23 @@ end
 
 function updateDifficultyTimer()
     -- This initialises the difficulty timer, which spawns obstacles via the `spawnObstacles` function every `difficultyIncreseFreq` ticks.
-    difficultyTimer = playdate.frameTimer.new(difficultyIncreaseFreq, spawnObstacles)
+    difficultyTimer = playdate.frameTimer.new(difficultyIncreaseFreq, increaseDifficulty)
     difficultyTimer.repeats = true
+end
+
+function increaseDifficulty()
+    difficulty += 1
+    
+    if difficulty == 1 then
+        -- First difficulty increase is the harder obstacle spawn patterns.
+        print("Increasing difficulty, obstacle spawns added.")
+        obstacleManager:increaseDifficulty()
+        return
+    else
+        -- The rest of the difficulty comes from more frequent spawns.
+        spawnFreq -= difficulty * 10
+        print(string.format("Increasing difficulty, spawn frequency is now %d.", spawnFreq))
+    end
 end
 
 function getSpeed()
@@ -241,6 +259,7 @@ function resetGame()
     gfx.sprite.removeAll()
     setUpClasses()
     gameIsOver = false
+    firstRun = true
 end
 
 function setSpeedModifier(modifier)

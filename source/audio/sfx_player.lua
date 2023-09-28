@@ -3,8 +3,9 @@ local sound <const> = playdate.sound
 class("SFXPlayer").extends()
 
 
-function SFXPlayer:init(sfxPath)
+function SFXPlayer:init(sfxPath, volume)
     self.player = sound.sampleplayer.new(sfxPath)
+    self.player:setVolume(volume)
     assert(self.player)
 end
 

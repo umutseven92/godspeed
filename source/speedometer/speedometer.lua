@@ -53,3 +53,7 @@ function Speedometer:update(speed)
 
     self.skull.sprite:setVisible(self.flashing)
 end
+
+function Speedometer:setSkullRatio(ratio)
+    self.skull:setRatio(ratio)
+end

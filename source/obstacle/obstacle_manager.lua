@@ -5,10 +5,15 @@ class("ObstacleManager").extends()
 
 local screenWidth <const>, _ = playdate.display.getSize()
 
-
 function ObstacleManager:init(laneMap, speedModifierFunc)
-    self.spawnMap = {self.spawnBottom, self.spawnMiddle, self.spawnTop, self.spawnTopBottom, self.spawnBottomMiddle, self.spawnTopMiddle, self.spawnStaggered}
+    -- The easy obstacle spawn configurations are all on single lanes.
+    self.easySpawnMap = { self.spawnBottom, self.spawnMiddle, self.spawnTop }
 
+    -- Medium configurations also contain multiple obstacles spawning on multiple lanes at the same time.
+    self.medSpawnMap = { self.spawnBottom, self.spawnMiddle, self.spawnTop, self.spawnTopBottom, self.spawnBottomMiddle,
+        self.spawnTopMiddle }
+
+    self.currentSpawnMap = self.easySpawnMap
     self.obstacles = {}
     self.laneMap = laneMap
     self.spawnPosX = screenWidth + 100
@@ -21,31 +26,24 @@ function ObstacleManager:indexLaneMap(i)
         if i == j then
             return k, v
         end
-        j+=1
+        j += 1
     end
 end
 
 function ObstacleManager:spawnRandom()
-    local rand = math.random(#self.spawnMap)
-    self.spawnMap[rand](self)
+    local rand = math.random(#self.currentSpawnMap)
+    self.currentSpawnMap[rand](self)
 end
 
 function ObstacleManager:spawnObstacle(posX, posY)
-    local obstacle = Obstacle(posX, posY, self.speedModifierFunc)
+    local staggerAmount = math.random(-30, 30)
+
+    local obstacle = Obstacle(posX + staggerAmount, posY, self.speedModifierFunc)
     table.insert(self.obstacles, obstacle)
 end
 
-function ObstacleManager:spawnObstacles(amount, offset)
-    for i = 1, amount do
-        local rand = math.random(3)
-        local _, v = self:indexLaneMap(rand)
-        self:spawnObstacle(self.spawnPosX + (i * offset), v)
-    end
-end
-
-function ObstacleManager:spawnStaggered()
-    local staggerAmount = 300 + math.random(-30, 30)
-    self:spawnObstacles(3, staggerAmount)
+function ObstacleManager:increaseDifficulty()
+    self.currentSpawnMap = self.medSpawnMap
 end
 
 function ObstacleManager:spawnTopBottom()
@@ -78,7 +76,7 @@ end
 function ObstacleManager:removeOutOfBounds()
     -- Remove all obstacles that are out of the screen.
     local temp = {}
-    for k,_ in ipairs(self.obstacles) do
+    for k, _ in ipairs(self.obstacles) do
         if self.obstacles[k].posX > 0 and self.obstacles[k].posY > 0 then
             table.insert(temp, self.obstacles[k])
         else
@@ -90,13 +88,13 @@ function ObstacleManager:removeOutOfBounds()
 end
 
 function ObstacleManager:scroll(speed)
-    for _,v in ipairs(self.obstacles) do
+    for _, v in ipairs(self.obstacles) do
         v:moveBy(speed)
     end
 end
 
 function ObstacleManager:update(delta)
-    for _,v in ipairs(self.obstacles) do
+    for _, v in ipairs(self.obstacles) do
         v:update(delta)
     end
 end

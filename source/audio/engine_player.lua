@@ -5,7 +5,7 @@ class("EnginePlayer").extends("SFXPlayer")
 local prevSpeed = 0
 
 function EnginePlayer:init()
-    EnginePlayer.super.init(self, "assets/sounds/engine")
+    EnginePlayer.super.init(self, "assets/sounds/engine", 0.5)
 end
 
 function EnginePlayer:play(speed)
