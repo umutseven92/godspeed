@@ -1,6 +1,6 @@
 --[[
-    Godspeed is a simple game, inspired by the movie Speed, where you drive a bus in the highway full of obstacles. If you go slower than a certain speed, you explode. Hitting obstacles slows you down.
-    The game goes on forever, and there is a score. You gain speed by mashing the A or B button, and change lanes by the up & down buttons.
+    Godspeed is a simple game, inspired by the movie Speed, where you drive a bus in the highway full of obstacles. If you go slower than a certain speed, you explode. Hitting obstacles slows you down. If you hit obstacles three times, you explode.
+    The game goes on forever, and there is a score. You gain speed by mashing the A button, and change lanes by the up & down buttons.
 ]]
 
 import "CoreLibs/object"
@@ -273,7 +273,7 @@ end
 
 function checkSpeedForGameOver(speed, deltaTime)
     --[[
-        There are basically two ways a player can lose:
+        There are basically two ways a player can lose that is dependent on speed:
         1) If the player speed goes below `speedLimit` for `gameOverMs` / `gameOverTick` seconds,
         2) If the player speed goes below `instantLoseLimit`. This is to prevent the player from cheesing the game by lighty tapping the button, rather than mashing it.
     --]]
@@ -310,6 +310,7 @@ function resetGame()
 end
 
 function onCrashed()
+    -- This function is passed to the ObstacleManager, which is then passed into each obstacle. It is called when the player crashes into an obstacle.
     crashes += 1
     crashAmount:setCrashAmount(crashes)
 

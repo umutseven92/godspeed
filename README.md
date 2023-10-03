@@ -4,7 +4,7 @@
 
 **One schoolbus, one ticking bomb, only one way to- forward. Godspeed.**
 
-**Godspeed** is a simple game for Playdate, inspired by the movie [Speed](https://www.imdb.com/title/tt0111257/?ref_=fn_al_tt_1). You play as a bus, speding down a highway full of obstacles, and if you slow down, the bomb explodes.
+**Godspeed** is a simple game for Playdate, inspired by the movie [Speed](https://www.imdb.com/title/tt0111257/?ref_=fn_al_tt_1). You play as a bus, speding down a highway full of obstacles, and if you slow down, or crash too much, the bomb explodes.
 
 ## Requirements
 
@@ -19,11 +19,11 @@
   pdc source/ out/godspeed.pdx
   ```
 
-* Then either play in the [Simulator](https://sdk.play.date/2.0.1/Inside%20Playdate.html#_running_your_game), or in your [Playdate](https://sdk.play.date/2.0.1/Inside%20Playdate.html#_running_your_game_on_playdate_hardware).
+* Then either play in the [Simulator](https://sdk.play.date/2.0.1/Inside%20Playdate.html#_running_your_game), or in your [Playdate by sideloading](https://help.play.date/games/sideloading/).
 
 ## How to Play
 
-Every obstacle you hit, you slow down. If you don't mash A hard enough, you slow down. If you slow down too much, you explode! How far can you go?
+Every obstacle you hit, you slow down. If you don't mash A hard enough, you slow down. If you slow down too much, or hit obstacles thrice, you explode! How far can you go?
 
 * <kbd>↑</kbd> to move up one lane
 * <kbd>↓</kbd> to move down one lane
