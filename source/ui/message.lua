@@ -7,7 +7,7 @@ local screenWidth <const>, screenHeight <const> = playdate.display.getSize()
 local speedUpText <const> = { "Mash it!!!", "Speed up!", "Go! Go! GO!", "I hear beeping!", "Floor it!", "Step on it!",
     "I'm too young to die!", "Shoulda taken the next bus!", "Wrong day to quit sniffing glue!",
     "Never told him I loved him!", "Never told her I loved her!" }
-local restartText <const> = "Press B button to restart"
+local restartText <const> = "Press B button to restart."
 local startText <const> = "Mash A button to start. Godspeed!"
 
 local message = nil

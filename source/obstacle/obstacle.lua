@@ -13,7 +13,7 @@ local imagesPath <const> = "assets/images/obstacles/"
 
 local crashPlayer = nil
 
-function Obstacle:init(posX, posY, speedModifierFunc)
+function Obstacle:init(posX, posY, onCrashed)
     self.posX = posX
     self.posY = posY
     self.skidding = false
@@ -25,7 +25,7 @@ function Obstacle:init(posX, posY, speedModifierFunc)
     Obstacle.super.init(self, imageFile, 1, self.posX, self.posY, colGroups, {1})
     crashPlayer = CrashPlayer()
     self.lerpHelper = LerpHelper(self)
-    self.speedModifierFunc = speedModifierFunc
+    self.onCrashed = onCrashed
 
     self.collided = false
 end
@@ -47,7 +47,7 @@ function Obstacle:move(posX, posY)
 
     if length > 0 then
         crashPlayer:play()
-        self.speedModifierFunc(2)
+        self.onCrashed()
         self:skid()
     end
 end

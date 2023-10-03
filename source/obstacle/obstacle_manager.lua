@@ -5,7 +5,7 @@ class("ObstacleManager").extends()
 
 local screenWidth <const>, _ = playdate.display.getSize()
 
-function ObstacleManager:init(laneMap, speedModifierFunc)
+function ObstacleManager:init(laneMap, onCrashed)
     -- The easy obstacle spawn configurations are all on single lanes.
     self.easySpawnMap = { self.spawnBottom, self.spawnMiddle, self.spawnTop }
 
@@ -21,7 +21,7 @@ function ObstacleManager:init(laneMap, speedModifierFunc)
     self.obstacles = {}
     self.laneMap = laneMap
     self.spawnPosX = screenWidth + 100
-    self.speedModifierFunc = speedModifierFunc
+    self.onCrashed = onCrashed
 end
 
 function ObstacleManager:indexLaneMap(i)
@@ -42,7 +42,7 @@ end
 function ObstacleManager:spawnObstacle(posX, posY)
     local staggerAmount = math.random(-30, 30)
 
-    local obstacle = Obstacle(posX + staggerAmount, posY, self.speedModifierFunc)
+    local obstacle = Obstacle(posX + staggerAmount, posY, self.onCrashed)
     table.insert(self.obstacles, obstacle)
 end
 

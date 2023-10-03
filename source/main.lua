@@ -17,6 +17,7 @@ import "ui/message"
 import "ui/score"
 import "ui/tutorial"
 import "ui/high_score"
+import "ui/crash_amount"
 import "audio/music_player"
 import "audio/engine_player"
 import "audio/beep_player"
@@ -78,6 +79,14 @@ local distance = 0
 -- `speedModifier` gets divided by speed to determine player speed. Used for slowing down / speeding up player.
 local speedModifier = 1
 
+-- How much to slow down the player after they crash.
+local crashSlowMod <const> = 2
+
+-- How many times the player can crash before exploding.
+local maxCrashes <const> = 3
+
+local crashes = 0
+
 -- Gameplay classes
 local backgroundManager = nil
 local obstacleManager = nil
@@ -90,6 +99,7 @@ local highScore = nil
 local message = nil
 local score = nil
 local tutorial = nil
+local crashAmount = nil
 
 -- Audio classes
 local musicPlayer = nil
@@ -102,10 +112,11 @@ function setUpClasses()
     speedometer = Speedometer()
     highScore = HighScore()
     message = Message()
+    crashAmount = CrashAmount()
     score = Score()
     lanes = Lanes()
     tutorial = Tutorial()
-    obstacleManager = ObstacleManager(lanes.laneMap, setSpeedModifier)
+    obstacleManager = ObstacleManager(lanes.laneMap, onCrashed)
     backgroundManager = BackgroundManager()
     player = Player(screenWidth / 6, lanes.laneMap.middle)
 
@@ -168,6 +179,7 @@ function gameOver()
     distance = 0
     firstRun = false
     speedModifier = 1
+    crashes = 0
 
     difficultyTimer:pause()
     difficultyTimer:remove()
@@ -290,28 +302,34 @@ end
 function resetGame()
     print("Restarting game")
     message:reset()
-
+    crashAmount:setCrashAmount(crashes)
     gfx.sprite.removeAll()
     setUpClasses()
     gameIsOver = false
     firstRun = true
 end
 
-function setSpeedModifier(modifier)
-    -- Set the speed modifier. The speed modifier will reset back to 1 after `slowTick` ticks.
+function onCrashed()
+    crashes += 1
+    crashAmount:setCrashAmount(crashes)
 
+    if crashes >= maxCrashes then
+        -- End the game is the player has crashed too much.
+        gameOver()
+    else
+        -- Set the speed modifier. The speed modifier will reset back to 1 after `slowTick` ticks.
+        print(string.format("Slowing down by %d..", crashSlowMod))
+        speedModifier += crashSlowMod
 
-    print(string.format("Slowing down by %d..", modifier))
-    speedModifier += modifier
+        if slowTimer ~= nil then
+            slowTimer:reset()
+        end
 
-    if slowTimer ~= nil then
-        slowTimer:reset()
+        slowTimer = playdate.frameTimer.new(slowTick, function()
+            print("Resetting slowdown")
+            speedModifier = 1
+        end)
     end
-
-    slowTimer = playdate.frameTimer.new(slowTick, function()
-        print("Resetting slowdown")
-        speedModifier = 1
-    end)
 end
 
 setup()
@@ -347,6 +365,12 @@ function playdate.update()
 
         backgroundManager:scroll(normSpeed)
         obstacleManager:scroll(normSpeed)
+
+        -- Since `onCrashed` runs during `scroll`, the player might have exploded at this point.
+        if gameIsOver then
+            return
+        end
+
         obstacleManager:update(deltaTime)
 
         if speed > 0 then
@@ -374,6 +398,7 @@ function playdate.update()
     if not showTutorial then
         score:update()
         highScore:update()
+        crashAmount:update()
     end
 
     obstacleManager:removeOutOfBounds()

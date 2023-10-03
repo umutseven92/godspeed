@@ -22,7 +22,7 @@ function Tutorial:show()
     gfx.setImageDrawMode(playdate.graphics.kDrawModeInverted)
     gfx.drawText("Up & Down to change lanes.", screenWidth / 3, screenHeight / 4.45)
     gfx.drawText("Mash A to speed up.", screenWidth / 3, screenHeight / 2.15)
-    gfx.drawText("If you stop, or slow down,\nyou explode.", screenWidth / 3, screenHeight / 1.5)
+    gfx.drawText("If you stop, slow down, or\ncrash thrice, you explode!", screenWidth / 3, screenHeight / 1.5)
     gfx.setImageDrawMode(original_draw_mode)
 end
 
