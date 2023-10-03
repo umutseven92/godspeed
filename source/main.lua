@@ -36,10 +36,14 @@ local speedDiv <const> = 10
 local speedInputMod <const> = 200
 
 -- How fast the player slows down if the button is not tapped.
-local slowMod <const> = 5
+local slowMod <const> = 8
 
 -- If the player goes below `speedLimit` for `gameOverMs` / `gameOverTick` seconds, the game is over.
 local speedLimit <const> = 70
+
+-- If the player goes below `instantLoseLimit`, the game is instantly over.
+local instantLoseLimit <const> = 30
+
 local gameOverMs <const> = 3000
 local gameOverTick <const> = 1000
 local gameOverAcc = 0
@@ -54,6 +58,11 @@ local difficultyTimer = nil
 
 -- How often (in distance) will obstacles spawn.
 local spawnFreq = 500
+
+-- How long the initial grace period is for the player. During the initial grace period, we give the player time to speed up, so they do not explode if their speed is 0.
+local initialGracePeriod <const> = 30
+local initialGraceTimer = nil
+local inGracePeriod = true
 
 -- Whether if this is the first run of `update()`. Used for initialisation, will be reset when game is over.
 local firstRun = true
@@ -158,8 +167,13 @@ function gameOver()
     gameOverAcc = 0
     distance = 0
     firstRun = false
+    speedModifier = 1
+
     difficultyTimer:pause()
     difficultyTimer:remove()
+    initialGraceTimer:pause()
+    initialGraceTimer:remove()
+    inGracePeriod = true
 
     if slowTimer ~= nil then
         slowTimer:pause()
@@ -170,19 +184,31 @@ function gameOver()
     highScore:setHighScore(score.totalScore)
 end
 
-function updateDifficultyTimer()
+function updateTimers()
     -- This initialises the difficulty timer, which spawns obstacles via the `spawnObstacles` function every `difficultyIncreseFreq` ticks.
     difficultyTimer = playdate.frameTimer.new(difficultyIncreaseFreq, increaseDifficulty)
     difficultyTimer.repeats = true
+
+    initialGraceTimer = playdate.frameTimer.new(initialGracePeriod, disableGracePeriod)
+end
+
+function disableGracePeriod()
+    inGracePeriod = false
+    print("Grace period ended, player can now explode if speed is 0.")
 end
 
 function increaseDifficulty()
     difficulty += 1
-    
+
     if difficulty == 1 then
         -- First difficulty increase is the harder obstacle spawn patterns.
-        print("Increasing difficulty, obstacle spawns added.")
-        obstacleManager:increaseDifficulty()
+        print("Increasing difficulty to mid, obstacle spawns added.")
+        obstacleManager:increaseDifficultyToMid()
+        return
+    elseif difficulty == 2 then
+        -- Second difficulty increase is the hardest obstacle spawn patterns.
+        print("Increasing difficulty to hard, obstacle spawns added.")
+        obstacleManager:increaseDifficultyToHard()
         return
     else
         -- The rest of the difficulty comes from more frequent spawns.
@@ -234,7 +260,16 @@ function checkStartInput()
 end
 
 function checkSpeedForGameOver(speed, deltaTime)
-    if speed < speedLimit then
+    --[[
+        There are basically two ways a player can lose:
+        1) If the player speed goes below `speedLimit` for `gameOverMs` / `gameOverTick` seconds,
+        2) If the player speed goes below `instantLoseLimit`. This is to prevent the player from cheesing the game by lighty tapping the button, rather than mashing it.
+    --]]
+
+    if speed <= instantLoseLimit and not inGracePeriod then
+        -- Game is over if the player stopped.
+        gameOver()
+    elseif speed < speedLimit then
         startGameOver(deltaTime)
         message:setSpeedUpText()
     else
@@ -288,9 +323,9 @@ function playdate.update()
     -- This needs to be called before drawing text, or the text won"t appear.
     gfx.sprite.update()
 
-    if firstRun and not gameIsOver then
+    if firstRun and not gameIsOver and not showTutorial then
         -- Initialisation
-        updateDifficultyTimer()
+        updateTimers()
         firstRun = false
     end
 

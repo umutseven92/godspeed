@@ -13,6 +13,10 @@ function ObstacleManager:init(laneMap, speedModifierFunc)
     self.medSpawnMap = { self.spawnBottom, self.spawnMiddle, self.spawnTop, self.spawnTopBottom, self.spawnBottomMiddle,
         self.spawnTopMiddle }
 
+    -- Hard configurations only contain multiple lanes spawning at the same time.
+    self.hardSpawnMap = { self.spawnTopBottom, self.spawnBottomMiddle,
+        self.spawnTopMiddle }
+
     self.currentSpawnMap = self.easySpawnMap
     self.obstacles = {}
     self.laneMap = laneMap
@@ -42,8 +46,12 @@ function ObstacleManager:spawnObstacle(posX, posY)
     table.insert(self.obstacles, obstacle)
 end
 
-function ObstacleManager:increaseDifficulty()
+function ObstacleManager:increaseDifficultyToMid()
     self.currentSpawnMap = self.medSpawnMap
+end
+
+function ObstacleManager:increaseDifficultyToHard()
+    self.currentSpawnMap = self.hardSpawnMap
 end
 
 function ObstacleManager:spawnTopBottom()
