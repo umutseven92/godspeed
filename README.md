@@ -6,6 +6,8 @@
 
 **Godspeed** is a simple game for Playdate, inspired by the movie [Speed](https://www.imdb.com/title/tt0111257/?ref_=fn_al_tt_1). You play as a bus, speding down a highway full of obstacles, and if you slow down, or crash too much, the bomb explodes.
 
+Released on [itch.io](https://umutseven92.itch.io/godspeed). Check out gameplay [here](https://youtu.be/5iMyMRfv55g).
+
 ## Requirements
 
 * [Playdate SDK](https://play.date/dev/)
@@ -48,6 +50,7 @@ Every obstacle you hit, you slow down. If you don't mash A hard enough, you slow
 
 * [AnimatedSprite](https://github.com/Whitebrim/AnimatedSprite) by [Whitebrim](https://github.com/Whitebrim) (`source/lib/AnimatedSprite.lua`) is licensed under the [MIT license](https://github.com/Whitebrim/AnimatedSprite/blob/master/LICENSE).
 * [Car engine sound effect](https://freesound.org/people/MarlonHJ/sounds/242740/) by MarlonHJ (`source/sounds/engine.wav`) is licensed under the [CC0 license](https://creativecommons.org/publicdomain/zero/1.0/).
+* [Car skidding sound effect](https://freesound.org/people/martian/sounds/178889/) by martian (`source/sounds/skid.wav`) is licensed under the [CC0 license](https://creativecommons.org/publicdomain/zero/1.0/).
 * [Crash crash sound effect](https://freesound.org/people/Eponn/sounds/420356/) by Eponn (`source/sounds/crash.wav`) is licensed under the [CC0 license](https://creativecommons.org/publicdomain/zero/1.0/).
 * [Explosion sound effect](https://freesound.org/people/tommccann/sounds/235968/) by tommccann (`source/sounds/explosion.wav`) is licensed under the [CC0 license](https://creativecommons.org/publicdomain/zero/1.0/).
 * [Bomb beep sound effect](https://freesound.org/people/snakebarney/sounds/138108/) by snakebarney (`source/sounds/beep-fast.wav` and `source/sounds/beep-fast.wav`) is licensed under the [CC0 license](https://creativecommons.org/publicdomain/zero/1.0/).
